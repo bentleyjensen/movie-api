@@ -1,6 +1,19 @@
 <hmtl>
 <head>
     <title>Documentation</title>
+    <style>
+        pre 
+        {
+            background-color: lightgray;
+        }
+
+        .method
+        {
+            background-color: lightblue;
+            border: 2px solid lightblue;
+            border-radius: 2px;
+        }
+    </style>
     </head>
     <body>
         <h1>Documentation</h1>
@@ -16,4 +29,27 @@
             <li>Allow users to remove a movie from their list of favorites</li>
             <li>Allow existing users to deregister</li>
         </ul>
+
+        <h3><span class="method">GET</span> /movies</h3>
+        <p>Get all movies as JSON</p>
+        <pre>
+[
+    {
+        title: 'Casino Royale',
+        year: 2006,
+        rating: 'PG-13',
+        director: 'Martin Campbell',
+        stars: ['Daniel Craig', 'Eva Green', 'Judy Dench'],
+        series: '007'
+    },
+    {
+        title: 'Quantum Of Solace',
+        year: 2008,
+        rating: 'PG-13',
+        director: 'Marc Forster',
+        stars: ['Daniel Craig', 'Olga Kurylenko', 'Mathieu Amalric'],
+        series: '007'
+    }
+]
+        </pre>
     </body>
