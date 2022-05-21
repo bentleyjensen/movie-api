@@ -1,12 +1,7 @@
-2022-05-18T15:23:24.241Z	URL:	/
-2022-05-18T15:23:35.776Z	URL:	/asdf
-2022-05-18T15:23:42.771Z	URL:	/documentation
-2022-05-18T15:23:45.757Z	URL:	/documentationas
-2022-05-18T15:23:49.446Z	URL:	/documentation
-2022-05-18T15:24:16.542Z	URL:	/documentation
-2022-05-18T15:24:19.146Z	URL:	/documentation
-2022-05-18T15:24:19.313Z	URL:	/documentation
-2022-05-18T15:24:19.483Z	URL:	/documentation
-2022-05-18T15:24:19.645Z	URL:	/documentation
-2022-05-18T15:24:19.793Z	URL:	/documentation
-2022-05-18T15:24:23.204Z	URL:	/documentationasd
+2022-05-21T02:51:42.227Z GET / 304 - - 5.910 ms
+2022-05-21T02:51:53.956Z GET /documentation 304 - - 4.810 ms
+2022-05-21T02:51:57.672Z GET /documentation.html 304 - - 0.806 ms
+2022-05-21T02:52:01.459Z GET /index.html 304 - - 0.839 ms
+2022-05-21T02:52:05.677Z GET /movies 304 - - 7.598 ms
+2022-05-21T02:52:21.827Z GET /moviesasdf 404 149 - 2.527 ms
+2022-05-21T02:52:25.187Z GET /asdfqwerasfd 404 151 - 1.244 ms
