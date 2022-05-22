@@ -54,8 +54,7 @@
         stars: ['Daniel Craig', 'Olga Kurylenko', 'Mathieu Amalric'],
         series: '007'
     }
-]
-        </pre>
+]</pre><br>
 
         <h3><span class="method">GET</span> /movies/title/{title}</h3>
         <p>Find a specific movie by title</p>
@@ -73,8 +72,7 @@
     director: 'Sam Mendez',
     stars: ['Daniel Craig', 'Javier Bardem', 'Naomie Harris'],
     series: '007'
-}
-        </pre>
+}</pre><br>
 
         <h3><span class="method">GET</span> /directors</h3>
         <p>Get all directors.</p>
@@ -93,25 +91,24 @@
         occupations: [
             'Director',
             'Producer',
-            'Screenwriter',
-        ],
+            'Screenwriter'
+        ]
     },
     'M. Night Shyamalan': {
         movies: [
             'Lady In The Water',
             'Signs',
             'The Sixth Sense',
-            'The Village',
+            'The Village'
         ],
         birthday: '1970-09-06',
         occupations: [
             'Director',
             'Producer',
-            'Screenwriter',
-        ],
-    },
-}
-        </pre>
+            'Screenwriter'
+        ]
+    }
+}</pre><br>
 
         <h3><span class="method">GET</span> /directors/{name}</h3>
         <p>Find a specific director</p>
@@ -136,8 +133,7 @@
             'Screenwriter'
         ]
     }
-}
-        </pre>
+}</pre><br>
 
         <h3><span class="method">GET</span> /genres</h3>
         <p>A list of all  genres</p>
@@ -162,8 +158,7 @@
         ],
         description: 'Fast-paced, fighting, and of course, action is included in these films.'
     }
-}
-        </pre>
+}</pre><br>
 
         <h3><span class="method">GET</span> /genres/{genre}</h3>
         <p>A specific genre's information</p>
@@ -182,8 +177,7 @@
         ],
         description: 'Not too long!'
     }
-}
-        </pre>
+}</pre><br>
 
         <h3><span class="method">GET</span> /users/{user}</h3>
         <p>A specific users's information</p>
@@ -200,15 +194,15 @@
             'Skyfall'
         ]
     }
-}
-        </pre>
+}</pre><br>
 
         <h3><span class="method">POST</span> /users</h3>
         <p>Create a new user</p>
-        <p>Request Body: JSON with key 'name' (required)</p>
+        <p>Request Body: JSON with key 'name' (required) and optional key 'password'</p>
         <pre>
 {
-    name: 'newUser'
+    name: 'newUser', // Required
+    password: 'NewPassword' // Optional
 }
         </pre>
         <p>Response: JSON Object</p>
@@ -216,62 +210,59 @@
         <pre>
 {
     'newUser': {
+        id: 1234,
+        password: 'NewPassword',
+        favorites: []
+    }
+}</pre><br>
+
+        <h3><span class="method">PATCH</span> /users/{username}</h3>
+        <p>Update a user's username from <span class="pre">{username}</span> to <span class="pre">name</span> from request body</p>
+        <p>Request Body: JSON with key 'name' (required)</p>
+        <pre>
+{
+    name: 'newUserName'
+}</pre>
+        <p>Response: JSON Object</p>
+        <p>A JSON object representing the new user with its new username.</p>
+        <pre>
+{
+    'newUserName': {
         id: 1234
         favorites: [
         ]
     }
-}
-        </pre>
+}</pre><br>
 
-        <h3><span class="method">PATCH</span> /users/{user}</h3>
-        <p>Update a user</p>
-        <p>Request Body: JSON with key 'name' (required)</p>
-        <pre>
-        {
-            name: 'newUserName'
-        }
-                </pre>
-        <p>Response: JSON Object</p>
-        <p>A JSON object representing the new user with its new username.</p>
-        <pre>
-        {
-            'newUserName': {
-                id: 1234
-                favorites: [
-                ]
-            }
-        }
-        </pre>
-
-        <h3><span class="method">DELETE</span> /users/{user}</h3>
-        <p>Delete {user}</p>
+        <h3><span class="method">DELETE</span> /users/{userId}</h3>
+        <p>Delete user whose id is <span class="pre">{userId}</span></p>
         <p>Request Body: None</p>
-        <p>Response: JSON Object</p>
-        <p>A plaintext success or failure message is returned.</p><br><br>
+        <p>Response: String</p>
+        <p>A plaintext success or failure message is returned.</p>
 
         <h3><span class="method">PUT</span> /users/{user}/favorites/{newFavorite}</h3>
         <p>Add <span class="pre">{newFavorite}</span> to {user}'s favorites</p>
         <p>Request Body: none (Authentication required soon)</p>
         <p>Response: JSON Object</p>
         <p>A JSON array of the updated favorites.</p>
+        <pre>PUT /users/bentley/favorites/Quantum%20Of%20Solace</pre>
         <pre>
 [
     'For The Birds',
     'Skyfall',
     'Quantum of Solace'
 
-]
-        </pre>
+]</pre><br>
 
         <h3><span class="method">DELETE</span> /users/{user}/favorites/{oldFavorite}</h3>
         <p>Remove <span class="pre">{oldFavorite}</span> from a {user}'s favorites</p>
         <p>Request Body: none (Authentication required soon)</p>
         <p>Response: JSON Object</p>
         <p>A JSON array of the updated favorites.</p>
+        <pre>DELETE /users/bentley/favorites/Skyfall</pre>
         <pre>
 [
     'For The Birds'
-]
-        </pre>
+]</pre><br>
 
     </body>
