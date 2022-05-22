@@ -49,6 +49,125 @@ const movies = [
 
 ];
 
+const directors = {
+    'Sam Mendez': {
+        movies: [
+            'Skyfall',
+            'Spectre',
+            'American Beauty',
+            '1917',
+        ],
+        birthday: '1965-08-01',
+        occupations: [
+            'Director',
+            'Producer',
+            'Screenwriter',
+        ],
+    },
+    'M. Night Shyamalan': {
+        movies: [
+            'Lady In The Water',
+            'Signs',
+            'The Sixth Sense',
+            'The Village',
+        ],
+        birthday: '1970-09-06',
+        occupations: [
+            'Director',
+            'Producer',
+            'Screenwriter',
+        ],
+    },
+    'Christopher Nolan': {
+        movies: [
+            'Interstellar',
+            'Tenet',
+            'Inception',
+            'Batman Begins',
+            'The Dark Knight',
+            'The Dark Knight Rises',
+        ],
+        birthday: '1970-07-30',
+        occupations: [
+            'Director',
+            'Producer',
+            'Screenwriter',
+        ],
+    },
+};
+
+const genres = {
+    'short': {
+        movies: [
+            'For The Birds',
+            'Put that thing back where it came from or so help me',
+            'Bao',
+            'Soul',
+        ],
+        // Short flims, short description lol
+        description: 'Not too long!',
+    },
+    'action': {
+        movies: [
+            'Avengers: Endgame',
+            'Furious 7',
+            'Skyfall',
+        ],
+        description: 'Fast-paced, fighting, and of course, action is included in these films.',
+    },
+    'adventure': {
+        movies: [
+            'Star Wars Ep. VII: The Force Awakens',
+            'The Lion King',
+            'The Lord of the Rings: The Fellowship of the Ring',
+        ],
+        description: 'Follow a memorable character on an unbelievable journey.',
+    },
+    'romance': {
+        movies: [
+            'The Notebook',
+            'Titanic',
+            'Casablanca',
+        ],
+        description: 'These movies follow people in love - or about to be.',
+    },
+    'thriller': {
+        movies: [
+            'Inception',
+            'Gravity',
+            'The Hunger Games',
+        ],
+        description: 'The \'keep you on the edge of your seat\' mood and anticipation centric storylines are found here.',
+    },
+    'comedy': {
+        movies: [
+            'The Hangover',
+            'Ted',
+            'Bruce Almighty',
+        ],
+        description: 'The best movies to watch with buddies or when you feel down and need a laugh',
+    },
+    'sci-fi': {
+        movies: [
+            'Back to the Future',
+            'E.T.',
+            'The Terminator',
+            'Enders Game',
+            'Ready Player One',
+        ],
+        description: 'Science Fiction - it\'s fantasy without the magic, and sometimes aliens or the future.',
+    },
+    'horror': {
+        movies: [
+            'It',
+            'Sinister',
+            'The Exorcist',
+            'The Silence Of The Lambs',
+        ],
+        description: 'Jump scares, murder, chases, and all other scary stuff to give you the heebie-jeebies.',
+    },
+};
+
 // File stream to append to log
 const logStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
 const logTemplate = ':date[iso] :method :url :status :res[content-length] - :response-time ms';
