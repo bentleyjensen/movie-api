@@ -1,9 +1,10 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const uuid = require('uuid');
 const fs = require('fs');
 const path = require('path');
-const { dir } = require('console');
 const port = 8000;
 
 const movies = [
@@ -171,7 +172,13 @@ const genres = {
 
 const users = {
     'bentley': {
+        id: 1,
         password: 'RandomPassword1!',
+        favorites: [],
+    },
+    'elyssa': {
+        id: 2,
+        password: 'RandomPassword2!',
         favorites: [],
     },
 };
@@ -190,6 +197,8 @@ function authorizeUser(req, res, next) {
 app.use(morgan(logTemplate, { stream: logStream }));
 
 app.use(authorizeUser);
+
+app.use(bodyParser.json());
 
 // Static files served from the /public folder
 app.use(express.static('public'));
@@ -246,6 +255,83 @@ app.get('/genres/:genre', (req, res) => {
     } else {
         res.status(404).send({});
     }
+});
+
+app.post('/users', (req, res) => {
+    const username = req.body.username;
+    const exists = Object.keys(users).indexOf(username) >= 0;
+
+    if(username && !exists) {
+        const newUser = {};
+        newUser[username] = {
+            id: uuid.v4(),
+            password: req.body.password || '',
+            favorites: [],
+        };
+
+        users[username] = newUser[username];
+        res.status(201).send(newUser);
+    } else if (username && exists) {
+        res.status(400).send(`User with username ${username} already exists`);
+    } else if (!username) {
+        res.status(400).send('Field \'username\' is missing');
+    }
+});
+
+app.delete('/users/:id', (req, res) => {
+    const id = req.params.id;
+
+    // Getting the user object that contains the ID doesn't help us
+    // to be able to delete it, so we're going to use Object.keys()
+    // to get the actual username, which we can use to delete the
+    // property on the main users object
+    const userList = Object.keys(users);
+    const deleteUser = userList.find((username) => {
+        // Access the id for every username and compare
+        // When true, sets deleteUser to the _username_ passed in to
+        // the callback, not the user[username] object
+        return users[username].id == id;
+    });
+
+    if(!deleteUser) {
+        res.status(404).send(`Could not find user with id ${id}`);
+    } else{
+        // This line is why we needed to use Object.keys() and
+        // Array.find() above
+        delete users[deleteUser];
+
+        res.status(200).send(`User with id ${id} was deleted`);
+    }
+});
+
+app.put('/users/:username/favorites/:favorite', (req, res) => {
+    const user = req.params.username;
+    const favorite = req.params.favorite;
+
+    if (users[user].favorites.indexOf(favorite) == -1) {
+        users[user].favorites.push(favorite);
+        res.status(201);
+    } else {
+        res.status(200);
+    }
+    res.send(users[user].favorites);
+
+});
+
+app.delete('/users/:username/favorites/:favorite', (req, res) => {
+    const user = req.params.username;
+    const favorite = req.params.favorite;
+
+    const index = users[user].favorites.indexOf(favorite);
+
+    // Only attempt removal if it is in the list
+    if (index >= 0) {
+        // Start at {index} and remove 1 element
+        users[user].favorites.splice(index, 1);
+    }
+
+    // Send current favorites, even if we didn't modify the list
+    res.status(200).send(users[user].favorites);
 });
 
 
