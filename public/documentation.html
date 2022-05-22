@@ -198,10 +198,10 @@
 
         <h3><span class="method">POST</span> /users</h3>
         <p>Create a new user</p>
-        <p>Request Body: JSON with key 'name' (required) and optional key 'password'</p>
+        <p>Request Body: JSON with key 'username' (required) and optional key 'password'</p>
         <pre>
 {
-    name: 'newUser', // Required
+    username: 'newUser', // Required
     password: 'NewPassword' // Optional
 }
         </pre>
@@ -240,12 +240,12 @@
         <p>Response: String</p>
         <p>A plaintext success or failure message is returned.</p>
 
-        <h3><span class="method">PUT</span> /users/{user}/favorites/{newFavorite}</h3>
+        <h3><span class="method">POST</span> /users/{user}/favorites/{newFavorite}</h3>
         <p>Add <span class="pre">{newFavorite}</span> to {user}'s favorites</p>
         <p>Request Body: none (Authentication required soon)</p>
         <p>Response: JSON Object</p>
         <p>A JSON array of the updated favorites.</p>
-        <pre>PUT /users/bentley/favorites/Quantum%20Of%20Solace</pre>
+        <pre>POST /users/bentley/favorites/Quantum%20Of%20Solace</pre>
         <pre>
 [
     'For The Birds',

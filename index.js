@@ -257,6 +257,38 @@ app.get('/genres/:genre', (req, res) => {
     }
 });
 
+app.get('/users/:username', (req, res) => {
+    const username = req.params.username;
+
+    if (username in users) {
+        const userObj = {};
+        userObj[username] = users[username];
+        res.status(200).send(userObj);
+    } else {
+        res.status(404).send(`Could not find user with username ${username}`);
+    }
+});
+
+app.patch('/users/:username', (req, res) => {
+    const username = req.params.username;
+    const newUsername = req.body.name;
+
+    if (!(username in users)) {
+        res.status(404).send(`Could not update ${username} because ${username} could not be found`);
+    } else if (!newUsername) {
+        res.status(400).send('Request body did not have key \'name\'');
+    } else {
+        // Create a new object, because pointers.
+        const newUser = new Object(users[username]);
+        delete users[username];
+        users[newUsername] = newUser;
+
+        const userObj = {};
+        userObj[newUsername] = users[newUsername];
+        res.status(200).send(userObj);
+    }
+});
+
 app.post('/users', (req, res) => {
     const username = req.body.username;
     const exists = Object.keys(users).indexOf(username) >= 0;
@@ -304,7 +336,7 @@ app.delete('/users/:id', (req, res) => {
     }
 });
 
-app.put('/users/:username/favorites/:favorite', (req, res) => {
+app.post('/users/:username/favorites/:favorite', (req, res) => {
     const user = req.params.username;
     const favorite = req.params.favorite;
 
