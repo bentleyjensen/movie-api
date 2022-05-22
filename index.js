@@ -250,7 +250,7 @@ app.get('/genres', (req, res) => {
 app.get('/genres/:genre', (req, res) => {
     const returnObj = {};
     if (req.params.genre in genres) {
-        returnObj[req.params.genre] = directors[req.params.genre];
+        returnObj[req.params.genre] = genres[req.params.genre];
         res.status(200).send(returnObj);
     } else {
         res.status(404).send({});
