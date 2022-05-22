@@ -10,6 +10,7 @@ const movies = [
         title: 'Casino Royale',
         year: 2006,
         rating: 'PG-13',
+        genres: ['Action', 'Adventure', 'thriller'],
         director: 'Martin Campbell',
         stars: ['Daniel Craig', 'Eva Green', 'Judy Dench'],
         series: '007',
@@ -18,6 +19,7 @@ const movies = [
         title: 'Quantum Of Solace',
         year: 2008,
         rating: 'PG-13',
+        genres: ['Action', 'Adventure', 'thriller'],
         director: 'Marc Forster',
         stars: ['Daniel Craig', 'Olga Kurylenko', 'Mathieu Amalric'],
         series: '007',
@@ -26,10 +28,25 @@ const movies = [
         title: 'Skyfall',
         year: 2012,
         rating: 'PG-13',
+        genres: ['Action', 'Adventure', 'thriller'],
         director: 'Sam Mendez',
         stars: ['Daniel Craig', 'Javier Bardem', 'Naomie Harris'],
         series: '007',
     },
+    {
+        title: 'Interstellar',
+        year: 2014,
+        rating: 'PG-13',
+        genres: ['Adventure', 'Drama', 'Sci-Fi'],
+        director: 'Christopher Nolan',
+        stars: [
+            'Matthew McConaughey',
+            'Anne Hathaway',
+            'Jessica Chastain',
+        ],
+        series: 'None',
+    },
+
 ];
 
 // File stream to append to log
