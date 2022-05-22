@@ -168,6 +168,13 @@ const genres = {
     },
 };
 
+const users = {
+    'bentley': {
+        password: 'RandomPassword1!',
+        favorites: [],
+    },
+}
+
 // File stream to append to log
 const logStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
 const logTemplate = ':date[iso] :method :url :status :res[content-length] - :response-time ms';
