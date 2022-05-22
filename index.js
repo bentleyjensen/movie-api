@@ -3,6 +3,7 @@ const app = express();
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
+const { dir } = require('console');
 const port = 8000;
 
 const movies = [
@@ -173,7 +174,7 @@ const users = {
         password: 'RandomPassword1!',
         favorites: [],
     },
-}
+};
 
 // File stream to append to log
 const logStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
@@ -205,6 +206,50 @@ app.get('/movies', (req, res) => {
     res.json(movies);
 });
 
+app.get('/movies/title/:title', (req, res) => {
+    const movie = movies.find((movie) => {
+        return movie.title == req.params.title;
+    });
+
+    if (movie) {
+        res.status(200).json(movie);
+    } else {
+        res.status(404).send({});
+    }
+});
+
+app.get('/directors', (req, res) => {
+    res.status(200).send(directors);
+});
+
+app.get('/directors/:name', (req, res) => {
+    const returnObj = {};
+    if (req.params.name in directors){
+        // Wrap in an object to reflect existence in main obj
+        returnObj[req.params.name] = directors[req.params.name];
+        res.status(200).send(returnObj);
+    } else {
+        res.status(404).send({});
+    }
+
+});
+
+app.get('/genres', (req, res) => {
+    res.status(200).send(genres);
+});
+
+app.get('/genres/:genre', (req, res) => {
+    const returnObj = {};
+    if (req.params.genre in genres) {
+        returnObj[req.params.genre] = directors[req.params.genre];
+        res.status(200).send(returnObj);
+    } else {
+        res.status(404).send({});
+    }
+});
+
+
+// Master Error Handler
 app.use((err, req, res, next) => {
     const timestamp = new Date().toISOString();
     console.log(err);
