@@ -2,9 +2,10 @@
 <head>
     <title>Documentation</title>
     <style>
-        pre 
+        pre, .pre
         {
             background-color: lightgray;
+            width: 50%;
         }
 
         .method
@@ -31,7 +32,10 @@
         </ul>
 
         <h3><span class="method">GET</span> /movies</h3>
-        <p>Get all movies as JSON</p>
+        <p>Get all movies as JSON. Note that it is an array,<br>
+        versus directors and genres, which is an object.</p></p>
+        <p>Request Body: None</p>
+        <p>Response: JSON Array containing objects</p> 
         <pre>
 [
     {
@@ -52,4 +56,222 @@
     }
 ]
         </pre>
+
+        <h3><span class="method">GET</span> /movies/title/{title}</h3>
+        <p>Find a specific movie by title</p>
+        <p>Request Body: None</p>
+        <p>Response: JSON Object</p>
+        <p>A GET request to <span class="pre">/movies/title/Skyfall</span> would return<br>
+        a single movie object. If a movie could not be found,<br>
+        response will be 404 and an empty object</p>
+        <pre>
+{
+    title: 'Skyfall',
+    year: 2012,
+    rating: 'PG-13',
+    genres: ['Action', 'Adventure', 'thriller'],
+    director: 'Sam Mendez',
+    stars: ['Daniel Craig', 'Javier Bardem', 'Naomie Harris'],
+    series: '007'
+}
+        </pre>
+
+        <h3><span class="method">GET</span> /directors</h3>
+        <p>Get all directors.</p>
+        <p>Request Body: None</p>
+        <p>Response: JSON Object</p>
+        <pre>
+{
+    'Sam Mendez': {
+        movies: [
+            'Skyfall',
+            'Spectre',
+            'American Beauty',
+            '1917',
+        ],
+        birthday: '1965-08-01',
+        occupations: [
+            'Director',
+            'Producer',
+            'Screenwriter',
+        ],
+    },
+    'M. Night Shyamalan': {
+        movies: [
+            'Lady In The Water',
+            'Signs',
+            'The Sixth Sense',
+            'The Village',
+        ],
+        birthday: '1970-09-06',
+        occupations: [
+            'Director',
+            'Producer',
+            'Screenwriter',
+        ],
+    },
+}
+        </pre>
+
+        <h3><span class="method">GET</span> /directors/{name}</h3>
+        <p>Find a specific director</p>
+        <p>Request Body: None</p>
+        <p>Response: JSON Object</p>
+        <p>The response is an object whose only key is <span class="pre">{name}</span>.<br>
+        If the director cannot be found, you'll receive a 404<br>
+        and an empty object.</p>
+        <pre>
+{
+    'Sam Mendez': {
+        movies: [
+            'Skyfall',
+            'Spectre',
+            'American Beauty',
+            '1917'
+        ],
+        birthday: '1965-08-01',
+        occupations: [
+            'Director',
+            'Producer',
+            'Screenwriter'
+        ]
+    }
+}
+        </pre>
+
+        <h3><span class="method">GET</span> /genres</h3>
+        <p>A list of all  genres</p>
+        <p>Request Body: None</p>
+        <p>Response: JSON Object</p>
+        <pre>
+{
+    'short': {
+        movies: [
+            'For The Birds',
+            'Put that thing back where it came from or so help me',
+            'Bao',
+            'Soul'
+        ],
+        description: 'Not too long!'
+    },
+    'action': {
+        movies: [
+            'Avengers: Endgame',
+            'Furious 7',
+            'Skyfall'
+        ],
+        description: 'Fast-paced, fighting, and of course, action is included in these films.'
+    }
+}
+        </pre>
+
+        <h3><span class="method">GET</span> /genres/{genre}</h3>
+        <p>A specific genre's information</p>
+        <p>Request Body: None</p>
+        <p>Response: JSON Object</p>
+        <p>A JSON object whose only key is <span class="pre">{genre}</span>.<br>
+        If the genre cannot be found, a 404 and empty object are returned.</p>
+        <pre>
+{
+    'short': {
+        movies: [
+            'For The Birds',
+            'Put that thing back where it came from or so help me',
+            'Bao',
+            'Soul'
+        ],
+        description: 'Not too long!'
+    }
+}
+        </pre>
+
+        <h3><span class="method">GET</span> /users/{user}</h3>
+        <p>A specific users's information</p>
+        <p>Request Body: None (Authentication required soon)</p>
+        <p>Response: JSON Object</p>
+        <p>A JSON object whose only key is <span class="pre">{user}</span>.<br>
+        If the user cannot be found, a 404 and empty object are returned.</p>
+        <pre>
+{
+    'bentley': {
+        id: 5,
+        favorites: [
+            'For The Birds',
+            'Skyfall'
+        ]
+    }
+}
+        </pre>
+
+        <h3><span class="method">POST</span> /users</h3>
+        <p>Create a new user</p>
+        <p>Request Body: JSON with key 'name' (required)</p>
+        <pre>
+{
+    name: 'newUser'
+}
+        </pre>
+        <p>Response: JSON Object</p>
+        <p>A JSON object representing the new user with its ID.</p>
+        <pre>
+{
+    'newUser': {
+        id: 1234
+        favorites: [
+        ]
+    }
+}
+        </pre>
+
+        <h3><span class="method">PATCH</span> /users/{user}</h3>
+        <p>Update a user</p>
+        <p>Request Body: JSON with key 'name' (required)</p>
+        <pre>
+        {
+            name: 'newUserName'
+        }
+                </pre>
+        <p>Response: JSON Object</p>
+        <p>A JSON object representing the new user with its new username.</p>
+        <pre>
+        {
+            'newUserName': {
+                id: 1234
+                favorites: [
+                ]
+            }
+        }
+        </pre>
+
+        <h3><span class="method">DELETE</span> /users/{user}</h3>
+        <p>Delete {user}</p>
+        <p>Request Body: None</p>
+        <p>Response: JSON Object</p>
+        <p>A plaintext success or failure message is returned.</p><br><br>
+
+        <h3><span class="method">PUT</span> /users/{user}/favorites/{newFavorite}</h3>
+        <p>Add <span class="pre">{newFavorite}</span> to {user}'s favorites</p>
+        <p>Request Body: none (Authentication required soon)</p>
+        <p>Response: JSON Object</p>
+        <p>A JSON array of the updated favorites.</p>
+        <pre>
+[
+    'For The Birds',
+    'Skyfall',
+    'Quantum of Solace'
+
+]
+        </pre>
+
+        <h3><span class="method">DELETE</span> /users/{user}/favorites/{oldFavorite}</h3>
+        <p>Remove <span class="pre">{oldFavorite}</span> from a {user}'s favorites</p>
+        <p>Request Body: none (Authentication required soon)</p>
+        <p>Response: JSON Object</p>
+        <p>A JSON array of the updated favorites.</p>
+        <pre>
+[
+    'For The Birds'
+]
+        </pre>
+
     </body>
