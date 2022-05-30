@@ -94,7 +94,7 @@ app.get('/directors/:name', (req, res) => {
 });
 
 app.get('/genres', (req, res) => {
-    movie.distinct('genres')
+    movie.distinct('genre')
         .then((result) => {
             res.status(200).send(result);
         }).catch((err) => {
@@ -107,7 +107,11 @@ app.get('/genres', (req, res) => {
 app.get('/movies/genre/:genre', (req, res) => {
     movie.find({ 'genre.name': req.params.genre })
         .then((result) => {
-            res.status(200).send(result);
+            if (!result || (Array.isArray(result) && result.length === 0)) {
+                res.status(404).send(`Cannot find any movies with genre ${req.params.genre}`);
+            } else {
+                res.status(200).send(result);
+            }
         }).catch((err) => {
             console.log('\n\n\nERROR:\n');
             console.log(err);
