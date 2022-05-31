@@ -42,237 +42,293 @@
         </ul>
 
         <h3><span class="method">GET</span> /movies</h3>
-        <p>Get all movies as JSON. Note that it is an array,<br>
-        versus directors and genres, which is an object.</p></p>
         <p>Request Body: None</p>
         <p>Response: JSON Array containing objects</p> 
+        <p>Get all movies as JSON. Note that it is an array. Directors are stored as references, but populated for this response.</p></p>
         <pre>
 [
     {
-        title: 'Casino Royale',
-        year: 2006,
-        rating: 'PG-13',
-        director: 'Martin Campbell',
-        stars: ['Daniel Craig', 'Eva Green', 'Judy Dench'],
-        series: '007'
+        "genre": {
+            "name": "Action",
+            "description": "Fast-paced, fighting, and of course, action is included in these films."
+        },
+        "actors": [],
+        "_id": "6293196ff04c1332bdae9490",
+        "title": "Casino Royale",
+        "year": 2006,
+        "description": "After earning 00 status and a licence to kill, secret agent James Bond sets out on his first mission as 007. Bond must defeat a private banker funding terrorists in a high-stakes game of poker at Casino Royale, Montenegro.",
+        "director": {
+            "_id": "6293196ff04c1332bdae9501",
+            "name": "\"Martin Campbell\"",
+            "birthdate": "1943-08-24T00:00:00.000Z",
+            "bio": "Considered one of the U.K.'s top directors by the mid-'80s, he directed the highly praised British telefilm, Reilly: Ace of Spies (1983). For his work on Edge of Darkness (1985), a five-hour BBC miniseries about nuclear contamination in England that depicted murder and high-ranking corruption, he won six BAFTA awards.",
+            "movies": [
+                "6293196ff04c1332bdae9490"
+            ]
+        }
     },
     {
-        title: 'Quantum Of Solace',
-        year: 2008,
-        rating: 'PG-13',
-        director: 'Marc Forster',
-        stars: ['Daniel Craig', 'Olga Kurylenko', 'Mathieu Amalric'],
-        series: '007'
+        "genre": {
+            "name": "Action",
+            "description": "Fast-paced, fighting, and of course, action is included in these films."
+        },
+        "actors": [],
+        "_id": "6293196ff04c1332bdae9491",
+        "title": "Quantum of Solace",
+        "year": 2008,
+        "description": "James Bond descends into mystery as he tries to stop a mysterious organisation from eliminating a country's most valuable resource.",
+        "director": {
+            "_id": "6293196ff04c1332bdae9502",
+            "name": "Marc Forster",
+            "birthdate": "1969-11-30T00:00:00.000Z",
+            "bio": "Marc Forster is a German-born filmmaker and screenwriter. He is best known for directing the films Monster's Ball(2001), Finding Neverland(2004), Stay(2005), Stranger than Fiction(2006), The Kite Runner(2007), Quantum of Solace(2008), and World War Z(2013).",
+            "movies": [
+                "6293196ff04c1332bdae9491"
+            ]
+        }
     }
 ]</pre><br>
-
         <h3><span class="method">GET</span> /movies/title/{title}</h3>
         <p>Find a specific movie by title</p>
         <p>Request Body: None</p>
         <p>Response: JSON Object</p>
-        <p>A GET request to <span class="pre">/movies/title/Skyfall</span> would return<br>
-        a single movie object. If a movie could not be found,<br>
-        response will be 404 and an empty object</p>
+        <p>A GET request to <span class="pre">/movies/title/Skyfall</span> would return a single movie object. If a movie could not be found, response will be 404 and an error message</p>
         <pre>
 {
-    title: 'Skyfall',
-    year: 2012,
-    rating: 'PG-13',
-    genres: ['Action', 'Adventure', 'thriller'],
-    director: 'Sam Mendez',
-    stars: ['Daniel Craig', 'Javier Bardem', 'Naomie Harris'],
-    series: '007'
+    "genre": {
+        "name": "Action",
+        "description": "Fast-paced, fighting, and of course, action is included in these films."
+    },
+    "actors": [],
+    "_id": "6293196ff04c1332bdae9490",
+    "title": "Casino Royale",
+    "year": 2006,
+    "description": "After earning 00 status and a licence to kill, secret agent James Bond sets out on his first mission as 007. Bond must defeat a private banker funding terrorists in a high-stakes game of poker at Casino Royale, Montenegro.",
+    "director": {
+        "_id": "6293196ff04c1332bdae9501",
+        "name": "\"Martin Campbell\"",
+        "birthdate": "1943-08-24T00:00:00.000Z",
+        "bio": "Considered one of the U.K.'s top directors by the mid-'80s, he directed the highly praised British telefilm, Reilly: Ace of Spies (1983). For his work on Edge of Darkness (1985), a five-hour BBC miniseries about nuclear contamination in England that depicted murder and high-ranking corruption, he won six BAFTA awards.",
+        "movies": [
+            "6293196ff04c1332bdae9490"
+        ]
+    }
 }</pre><br>
 
         <h3><span class="method">GET</span> /directors</h3>
         <p>Get all directors.</p>
         <p>Request Body: None</p>
-        <p>Response: JSON Object</p>
+        <p>Response: JSON Array containing objects</p>
+        <p>Directors are returned in an array of objects. Movie ids are included, but not populated.</p>
         <pre>
-{
-    'Sam Mendez': {
-        movies: [
-            'Skyfall',
-            'Spectre',
-            'American Beauty',
-            '1917',
-        ],
-        birthday: '1965-08-01',
-        occupations: [
-            'Director',
-            'Producer',
-            'Screenwriter'
+[
+    {
+        "_id": "6293196ff04c1332bdae949f",
+        "name": "M. Night Shyamalan",
+        "birthdate": "1970-09-06T00:00:00.000Z",
+        "bio": "His major films include the science fiction thriller Signs (2002), the psychological thriller The Village (2004), the fantasy thriller Lady in the Water (2006), The Happening (2008), The Last Airbender (2010), After Earth (2013), and the horror films The Visit (2015) and Split (2016).",
+        "movies": [
+            "6293196ff04c1332bdae9496",
+            "6293196ff04c1332bdae9497",
+            "6293196ff04c1332bdae9503",
+            "6293196ff04c1332bdae9498"
         ]
     },
-    'M. Night Shyamalan': {
-        movies: [
-            'Lady In The Water',
-            'Signs',
-            'The Sixth Sense',
-            'The Village'
-        ],
-        birthday: '1970-09-06',
-        occupations: [
-            'Director',
-            'Producer',
-            'Screenwriter'
+    {
+        "_id": "6293196ff04c1332bdae9500",
+        "name": "Christopher Nolan",
+        "birthdate": "1970-07-30T00:00:00.000Z",
+        "bio": "Best known for his cerebral, often nonlinear, storytelling, acclaimed writer-director Christopher Nolan has, over the course of 15 years of filmmaking, gone from low-budget independent films to working on some of the biggest blockbusters ever made.",
+        "movies": [
+            "6293196ff04c1332bdae9493",
+            "6293196ff04c1332bdae9494",
+            "6293196ff04c1332bdae9495"
         ]
     }
-}</pre><br>
+]</pre><br>
 
         <h3><span class="method">GET</span> /directors/{name}</h3>
         <p>Find a specific director</p>
         <p>Request Body: None</p>
         <p>Response: JSON Object</p>
-        <p>The response is an object whose only key is <span class="pre">{name}</span>.<br>
-        If the director cannot be found, you'll receive a 404<br>
-        and an empty object.</p>
+        <p>The response is a single director object. If the director cannot be found, you'll receive a 404 and an error message. Movie ids are included, but not populated.</p>
         <pre>
 {
-    'Sam Mendez': {
-        movies: [
-            'Skyfall',
-            'Spectre',
-            'American Beauty',
-            '1917'
-        ],
-        birthday: '1965-08-01',
-        occupations: [
-            'Director',
-            'Producer',
-            'Screenwriter'
-        ]
-    }
+    "_id": "6293196ff04c1332bdae9500",
+    "name": "Christopher Nolan",
+    "birthdate": "1970-07-30T00:00:00.000Z",
+    "bio": "Best known for his cerebral, often nonlinear, storytelling, acclaimed writer-director Christopher Nolan has, over the course of 15 years of filmmaking, gone from low-budget independent films to working on some of the biggest blockbusters ever made.",
+    "movies": [
+        "6293196ff04c1332bdae9493",
+        "6293196ff04c1332bdae9494",
+        "6293196ff04c1332bdae9495"
+    ]
 }</pre><br>
 
         <h3><span class="method">GET</span> /genres</h3>
-        <p>A list of all  genres</p>
+        <p>A list of all genres</p>
         <p>Request Body: None</p>
-        <p>Response: JSON Object</p>
+        <p>Response: JSON Array of Objects</p>
+        <p>Response is an array of all genres, as objects. Because this is a distinct aggregate from the <span class='pre'>genre</span> key on the movie objects, this only contains the genres currently in the database, and as movies are added this will automatically be updated.</p>
         <pre>
-{
-    'short': {
-        movies: [
-            'For The Birds',
-            'Put that thing back where it came from or so help me',
-            'Bao',
-            'Soul'
-        ],
-        description: 'Not too long!'
+[
+    {
+        "name": "Action",
+        "description": "Fast-paced, fighting, and of course, action is included in these films."
     },
-    'action': {
-        movies: [
-            'Avengers: Endgame',
-            'Furious 7',
-            'Skyfall'
-        ],
-        description: 'Fast-paced, fighting, and of course, action is included in these films.'
+    {
+        "name": "Horror",
+        "description": "Jump scares, murder, chases, and all other scary stuff to give you the heebie-jeebies."
     }
-}</pre><br>
+]</pre><br>
 
-        <h3><span class="method">GET</span> /genres/{genre}</h3>
-        <p>A specific genre's information</p>
+        <h3><span class="method">GET</span> /movies/genres/{genre}</h3>
         <p>Request Body: None</p>
-        <p>Response: JSON Object</p>
-        <p>A JSON object whose only key is <span class="pre">{genre}</span>.<br>
-        If the genre cannot be found, a 404 and empty object are returned.</p>
+        <p>Response: JSON Array of objects</p>
+        <p>An array of movies, the same as from the <span class="pre">/movies</span> endpoint. This is simply a filter on the movies returned. If the genre cannot be found (i.e. it isn't returned from the <span class="pre">/genres</span> endpoint), a 404 and an error message are returned.</p>
+        <pre>refer to the /movies endpoint</pre> <h3><span class="method">GET</span> /users</h3>
+        <p>A list of all users</p>
+        <p>Request Body: None (Authentication required soon)</p>
+        <p>Response: JSON Array of Objects</p>
+        <p>The array contains multiple users objects.</p>
         <pre>
-{
-    'short': {
-        movies: [
-            'For The Birds',
-            'Put that thing back where it came from or so help me',
-            'Bao',
-            'Soul'
+[
+    {
+        "_id": "6293196ff04c1332bdae9499",
+        "username": "Bentley",
+        "password": "TestPassword1",
+        "birthdate": "1991-01-01T00:00:00.000Z",
+        "favorites": [
+            "6293196ff04c1332bdae9492"
         ],
-        description: 'Not too long!'
+        "email": "Bentley@email.com"
+    },
+    {
+        "_id": "6293196ff04c1332bdae949a",
+        "username": "Elyssa",
+        "password": "TestPassword1",
+        "birthdate": "1992-02-02T00:00:00.000Z",
+        "favorites": []
     }
-}</pre><br>
+]</pre><br>
 
         <h3><span class="method">GET</span> /users/{user}</h3>
-        <p>A specific users's information</p>
         <p>Request Body: None (Authentication required soon)</p>
         <p>Response: JSON Object</p>
-        <p>A JSON object whose only key is <span class="pre">{user}</span>.<br>
-        If the user cannot be found, a 404 and empty object are returned.</p>
+        <p>A specific users's information</p>
+        <p>A JSON object representing a single user. If the user cannot be found, a 404 and an error message are returned.</p>
         <pre>
 {
-    'bentley': {
-        id: 5,
-        favorites: [
-            'For The Birds',
-            'Skyfall'
-        ]
-    }
+    "_id": "6293196ff04c1332bdae949a",
+    "username": "Elyssa",
+    "password": "TestPassword1",
+    "birthdate": "1992-02-02T00:00:00.000Z",
+    "favorites": []
 }</pre><br>
 
         <h3><span class="method">POST</span> /users</h3>
         <p>Create a new user</p>
-        <p>Request Body: JSON with key 'username' (required) and optional key 'password'</p>
+        <p>Request Body: JSON representing the full user object (without _id)</p>
+        <p><span class="pre">birthday</span> and <span class="pre">favorites</span> are optional, and <span class="pre">favorites</span> will be initialized to an empty array if not provided.</p>
         <pre>
 {
-    username: 'newUser', // Required
-    password: 'NewPassword' // Optional
-}
-        </pre>
+    "username": "NewTestUser",
+    "email": "NewTestUser@email.com",
+    "password": "TestPassword123",
+    "birthdate": "1992-02-02",
+    "favorites": []
+}</pre>
         <p>Response: JSON Object</p>
         <p>A JSON object representing the new user with its ID.</p>
         <pre>
 {
-    'newUser': {
-        id: 1234,
-        password: 'NewPassword',
-        favorites: []
-    }
+    "username": "NewTestUser",
+    "password": "TestPassword123",
+    "email": "NewTestUser@email.com",
+    "birthdate": "1992-02-02T00:00:00.000Z",
+    "favorites": [],
+    "_id": "62965c5f09241501a71be323",
+    "__v": 0
 }</pre><br>
 
-        <h3><span class="method">PATCH</span> /users/{username}</h3>
-        <p>Update a user's username from <span class="pre">{username}</span> to <span class="pre">name</span> from request body</p>
-        <p>Request Body: JSON with key 'name' (required)</p>
+        <h3><span class="method">PUT</span> /users/{username}</h3>
+        <p>Update any of a user's information (except _id), including email, password and username.
+            The username from the url is used for lookup, and the username is set with the username in the request body.</p>
+        <p>Request Body: A full user object with all keys</p>
         <pre>
 {
-    name: 'newUserName'
+    "username": "NewTestUser",
+    "email": "NewTestUser@email.com",
+    "password": "TestPassword123",
+    "birthdate": "1992-02-02",
+    "favorites": []
 }</pre>
         <p>Response: JSON Object</p>
-        <p>A JSON object representing the new user with its new username.</p>
+        <p>The full, updated user object with _id</p>
         <pre>
 {
-    'newUserName': {
-        id: 1234
-        favorites: [
-        ]
-    }
+    "_id": "62965c5f09241501a71be323",
+    "username": "NewTestUser",
+    "password": "NewPassword1",
+    "email": "NewTestUser@email.com",
+    "birthdate": "1991-01-01T00:00:00.000Z",
+    "favorites": [],
+    "__v": 0
 }</pre><br>
 
         <h3><span class="method">DELETE</span> /users/{userId}</h3>
         <p>Delete user whose id is <span class="pre">{userId}</span></p>
         <p>Request Body: None</p>
-        <p>Response: String</p>
-        <p>A plaintext success or failure message is returned.</p>
+        <p>Response: JSON</p>
+        <p>A JSON with a <span class="pre">deletedCount</span> key. The count will be 1 if the user existed and was deleted, zero otherwise</p>
+        <pre>
+{
+    "acknowledged": true,
+    "deletedCount": 1
+}</pre><br>
 
         <h3><span class="method">POST</span> /users/{user}/favorites/{newFavorite}</h3>
-        <p>Add <span class="pre">{newFavorite}</span> to {user}'s favorites</p>
-        <p>Request Body: none (Authentication required soon)</p>
-        <p>Response: JSON Object</p>
-        <p>A JSON array of the updated favorites.</p>
-        <pre>POST /users/bentley/favorites/Quantum%20Of%20Solace</pre>
+        <p>Add a movie to a user's favorites list. <span class="pre">{user}</span> should be a username, and
+            <span class="pre">{newFavorite}</span> should be the <span class="pre">_id</span> of a movie.
+            If a movie is already in the list, the return object is the same, and no duplicates are added.
+            The <span class="pre">PUT /users/{user}</span> endpoint can also update favorites, this is a
+            simpler endpoint that only does favorites and requires no request body. The return object is exactly the same.</p>
+        <p>Request Body: none</p>
+        <p>Response: JSON of the full user object, with the updated favorites list.</p>
+        <pre>POST /users/Bentley/favorites/6293196ff04c1332bdae9490</pre>
         <pre>
-[
-    'For The Birds',
-    'Skyfall',
-    'Quantum of Solace'
-
-]</pre><br>
+{
+    "_id": "6293196ff04c1332bdae9499",
+    "username": "Bentley",
+    "password": "TestPassword1",
+    "birthdate": "1991-01-01T00:00:00.000Z",
+    "favorites": [
+        "6293196ff04c1332bdae9492",
+        "6293196ff04c1332bdae9490"
+    ],
+    "email": "Bentley@email.com"
+}</pre><br>
 
         <h3><span class="method">DELETE</span> /users/{user}/favorites/{oldFavorite}</h3>
-        <p>Remove <span class="pre">{oldFavorite}</span> from a {user}'s favorites</p>
-        <p>Request Body: none (Authentication required soon)</p>
-        <p>Response: JSON Object</p>
-        <p>A JSON array of the updated favorites.</p>
-        <pre>DELETE /users/bentley/favorites/Skyfall</pre>
+        <p>Remove a movie to a user's favorites list. <span class="pre">{user}</span> should be a username, and
+            <span class="pre">{oldFavorite}</span> should be the <span class="pre">_id</span> of a movie.
+            If a movie is already missing from the list, the return object is the same, and nothing was changed.
+            The <span class="pre">PUT /users/{user}</span> endpoint can also update favorites, this is a
+            simpler endpoint that only does favorites and requires no request body. The return object is exactly the same.</p>
+        <p>Request Body: none</p>
+        <p>Response: JSON of the full user object, with the updated favorites list.</p>
+        <pre>DELETE /users/Bentley/favorites/6293196ff04c1332bdae9490</pre>
         <pre>
-[
-    'For The Birds'
-]</pre><br>
+{
+    "_id": "6293196ff04c1332bdae9499",
+    "username": "Bentley",
+    "password": "TestPassword1",
+    "birthdate": "1991-01-01T00:00:00.000Z",
+    "favorites": [
+        "6293196ff04c1332bdae9492"
+    ],
+    "email": "Bentley@email.com"
+}</pre><br>
+
 
     </body>
