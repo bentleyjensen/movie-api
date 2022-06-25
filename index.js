@@ -23,9 +23,16 @@ function authorizeUser(req, res, next) {
 // Run before Each request handler
 app.use(morgan(logTemplate, { stream: logStream }));
 
-app.use(authorizeUser);
-
 app.use(bodyParser.json());
+
+// These need bodyParser to have already  run when being called
+const passport = require('passport');
+
+// bring in login endpoint
+require('./auth')(app);
+require('./passport');
+
+app.use(authorizeUser);
 
 // Static files served from the /public folder
 app.use(express.static('public'));
@@ -38,7 +45,7 @@ app.get('/documentation', (req, res) => {
     res.sendFile('documentation.html', { root: `${__dirname}/public` });
 });
 
-app.get('/movies', (req, res) => {
+app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
     movie.find()
         .populate('director')
         .then((result) => {

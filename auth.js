@@ -6,7 +6,7 @@ const passport = require('passport');
 // My passport.js
 require('./passport');
 
-let generateToken = function (user) {
+const generateToken = function(user) {
     return jwt.sign(user, {
         subject: user.username,
         expiresIn: '7d',
@@ -14,13 +14,17 @@ let generateToken = function (user) {
     });
 };
 
+
+// Add login endpoint
 module.exports = (router) => {
     router.post('/login', (req, res) => {
         passport.authenticate('local', {session: false}, (error, user, info) => {
             if (error || !user) {
                 return res.status(400).json({
                     message: 'Could not authenticate',
-                    user: user,
+                    user,
+                    error,
+                    info,
                 });
             }
 
