@@ -9,12 +9,13 @@ const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
 passport.use(new LocalStrategy({
-    usernameField: 'Username',
-    passwordField: 'Password',
+    usernameField: 'username',
+    passwordField: 'password',
 }, (username, password, callback) => {
     console.log(`Authenticating ${username} with password ${password}`);
-    Users.findOne({Username: username}, (err, user) => {
+    Users.findOne({username: username}, (err, user) => {
         if (err) {
+            console.log('Mongo threw an error');
             console.log(err);
             return callback(err);
         }
@@ -25,7 +26,6 @@ passport.use(new LocalStrategy({
             return callback(null, false, {message: 'Incorrect username password combination'});
         }
 
-        console.log('Sign-in attempt complete');
         return callback(null, user);
     });
 }));

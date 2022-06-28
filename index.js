@@ -45,7 +45,7 @@ app.get('/documentation', (req, res) => {
     res.sendFile('documentation.html', { root: `${__dirname}/public` });
 });
 
-app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
+app.get('/movies', (req, res) => {
     movie.find()
         .populate('director')
         .then((result) => {
@@ -126,7 +126,7 @@ app.get('/movies/genre/:genre', (req, res) => {
         });
 });
 
-app.get('/users', (req, res) => {
+app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
     user.find()
         .then((result) => {
             res.status(200).send(result);
@@ -137,7 +137,7 @@ app.get('/users', (req, res) => {
         });
 });
 
-app.get('/users/:username', (req, res) => {
+app.get('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
     user.findOne({username: req.params.username})
         .then((result) => {
             if (result) {
@@ -160,7 +160,7 @@ app.get('/users/:username', (req, res) => {
 //    birthdate: ...,
 //    favorites: ...,
 // }
-app.put('/users/:username', (req, res) => {
+app.put('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
     // Use URL param to find username, and body to update it
     // This enables a user to change their username
     user.findOneAndUpdate({ username: req.params.username },
@@ -194,6 +194,7 @@ app.put('/users/:username', (req, res) => {
         });
 });
 
+// No Auth needed to create a new user
 app.post('/users', (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
@@ -232,7 +233,7 @@ app.post('/users', (req, res) => {
     });
 });
 
-app.delete('/users/:id', (req, res) => {
+app.delete('/users/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
     user.deleteOne({
         _id: req.params.id,
     }).then((result) => {
@@ -248,7 +249,7 @@ app.delete('/users/:id', (req, res) => {
     });
 });
 
-app.post('/users/:username/favorites/:favorite', (req, res) => {
+app.post('/users/:username/favorites/:favorite', passport.authenticate('jwt', { session: false }), (req, res) => {
     const username = req.params.username;
     const favorite = req.params.favorite;
 
@@ -274,7 +275,7 @@ app.post('/users/:username/favorites/:favorite', (req, res) => {
 
 });
 
-app.delete('/users/:username/favorites/:favorite', (req, res) => {
+app.delete('/users/:username/favorites/:favorite', passport.authenticate('jwt', { session: false }), (req, res) => {
     const username = req.params.username;
     const favorite = req.params.favorite;
 
