@@ -20,9 +20,8 @@ passport.use(new LocalStrategy({
             return callback(err);
         }
 
-        if (!user) {
+        if (!user || !user.validatePassword(password)) {
             console.log('User does not exist');
-            // TODO: Implement password checking
             return callback(null, false, {message: 'Incorrect username password combination'});
         }
 

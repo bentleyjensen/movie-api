@@ -44,7 +44,6 @@ module.exports = (router) => {
                 const token = generateToken(user.toJSON());
 
                 return res.json({
-                    user,
                     token,
                 });
             });

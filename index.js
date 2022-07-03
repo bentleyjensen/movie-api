@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const port = 8000;
@@ -25,7 +26,19 @@ app.use(morgan(logTemplate, { stream: logStream }));
 
 app.use(bodyParser.json());
 
-// These need bodyParser to have already  run when being called
+const allowedOrigins = ['http://localhost:8080'];
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.indexOf(origin) >= 0) {
+            callback(null, true);
+        } else {
+            const message = `The CORS Policy for this application does not allow access from origin ${origin}`;
+            return callback(new Error(message), false);
+        }
+    },
+}));
+
+// These need bodyParser to have already run when being called
 const passport = require('passport');
 
 // bring in login endpoint
@@ -127,7 +140,10 @@ app.get('/movies/genre/:genre', (req, res) => {
 });
 
 app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
-    user.find()
+    user.find({}, {
+        // Hide password in result objects
+        password: 0,
+    })
         .then((result) => {
             res.status(200).send(result);
         }).catch((err) => {
@@ -138,7 +154,10 @@ app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) =
 });
 
 app.get('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
-    user.findOne({username: req.params.username})
+    user.findOne({ username: req.params.username }, {
+        // Hide password in result object
+        password: 0,
+    })
         .then((result) => {
             if (result) {
                 res.status(200).send(result);
@@ -163,11 +182,12 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), (r
 app.put('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
     // Use URL param to find username, and body to update it
     // This enables a user to change their username
+    const hashedPass = user.hashPassword(req.body.password);
     user.findOneAndUpdate({ username: req.params.username },
         {
             $set: {
                 username: req.body.username,
-                password: req.body.password,
+                password: hashedPass,
                 email: req.body.email,
                 birthdate: req.body.birthdate,
                 favorites: req.body.favorites,
@@ -175,7 +195,9 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }), (r
         },
         {
             // Return the post-update object
-            new: true,
+            returnNewDocument: true,
+            // Hide password in result
+            projection: { password: 0 },
         })
         .then((result) => {
             if (!result) {
@@ -199,10 +221,14 @@ app.post('/users', (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
 
-    if (!username || !email) {
-        res.status(400).send('Both username and email required');
+    // bcrypt creates a hash with an empty string, so check req and hash later
+    if (!username || !email || !req.body.password) {
+        res.status(400).send('Missing paramter(s) username, email, or password');
     }
 
+    const hashedPass = user.hashPassword(req.body.password);
+
+    // Verify username is not taken and email is not used
     user.findOne({
         $or: [
             {username: req.body.username},
@@ -214,11 +240,13 @@ app.post('/users', (req, res) => {
         } else {
             user.create({
                 username: req.body.username,
-                password: req.body.password,
+                password: hashedPass,
                 email: req.body.email,
                 birthdate: req.body.birthdate,
                 favorites: req.body.favorites,
             }).then((newResult) => {
+                // For some reason using `delete newResult.password` doesn't work
+                newResult.password = '';
                 res.status(201).send(newResult);
             });
         }
@@ -259,8 +287,12 @@ app.post('/users/:username/favorites/:favorite', passport.authenticate('jwt', { 
         $addToSet: {
             favorites: favorite,
         },
-    }, {
-        new: true,
+    },
+    {
+        // Return the post-update object
+        returnNewDocument: true,
+        // Hide password in result
+        projection: { password: 0 },
     }).then((result) => {
         res.status(200).send(result);
     }).catch((err) => {
@@ -285,8 +317,12 @@ app.delete('/users/:username/favorites/:favorite', passport.authenticate('jwt', 
         $pull: {
             favorites: favorite,
         },
-    }, {
-        new: true,
+    },
+    {
+        // Return the post-update object
+        returnNewDocument: true,
+        // Hide password in result
+        projection: { password: 0 },
     }).then((result) => {
         if (!result) {
             res.status(404).send(`Could not find user with username ${username}`);

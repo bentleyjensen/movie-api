@@ -1,5 +1,6 @@
 const Mongoose = require('mongoose');
 const ObjectId = Mongoose.Schema.ObjectId;
+const bcrypt = require('bcrypt');
 
 const movieSchema = Mongoose.Schema({
     title: {type: String, required: true},
@@ -34,6 +35,19 @@ const userSchema = Mongoose.Schema({
     birthdate: Date,
     favorites: [{type: ObjectId, ref: 'movie'}],
 });
+
+userSchema.statics.hashPassword = (password) => {
+    return bcrypt.hashSync(password, 10);
+};
+
+// No arrow functions because this is an instance method
+// Arrow functions bind `this` to the object instead of the instance
+userSchema.methods.validatePassword = function(argPass) {
+    // using `this.password` as the argument is making it break, so do it in two lines
+    const instancePass = this.password;
+    return bcrypt.compareSync(argPass, instancePass);
+
+};
 
 module.exports.movie = Mongoose.model('movie', movieSchema);
 module.exports.director = Mongoose.model('director', directorSchema);
