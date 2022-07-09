@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const port = 8000;
+const port = process.env.PORT || 8080;
 const mongoose = require('mongoose');
 const {movie, user, director} = require('./models');
 
@@ -353,5 +353,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => {
-    console.log(`listening on ${port}`);
+    console.log(`Listening on ${port}`);
 });
