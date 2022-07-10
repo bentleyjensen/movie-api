@@ -45,9 +45,10 @@ module.exports = (router) => {
                 // Passport.js JWTStrategy pulls full user via db for use in router endpoints
                 const strippedUser = {
                     username: user.username,
+                    email: user.email,
                     _id: user._id,
                 };
-                const token = generateToken(strippedUser.toJSON());
+                const token = generateToken(strippedUser);
 
                 return res.json({
                     token,

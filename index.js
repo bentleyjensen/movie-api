@@ -146,7 +146,7 @@ app.get('/user/:username',
 
         //                          Compare URL        to        JWT
         if (!req.user.username || req.params.username !== req.user.username) {
-            res.status(403).send('URL Parameter and authorized user mismatch');
+            return res.status(403).send('URL Parameter and authorized user mismatch');
         }
         user.findOne({ username: req.user.username }, {
             // Hide password in result object
@@ -181,7 +181,7 @@ app.put('/user/:username',
         check('email', 'Email must be valid').isEmail(),
         check('password', 'Password must be 8 characters and contain an uppercase letter, lowercase letter, a number, and a symbol').isStrongPassword(),
         check('birthdate', 'Birthdate must be a valid date').isDate(),
-        check('favorites', 'Favorites must be MongoID').isMongoId(),
+        check('favorites.*', 'Favorites must be MongoID').isMongoId(),
     ],
     (req, res) => {
         const validationErrors = validationResult(req);
@@ -191,7 +191,7 @@ app.put('/user/:username',
 
         //                          Compare URL        to        JWT
         if (!req.user.username || req.params.username !== req.user.username) {
-            res.status(403).send('URL Parameter and authorized user mismatch');
+            return res.status(403).send('URL Parameter and authorized user mismatch');
         }
         const hashedPass = user.hashPassword(req.body.password);
         // Use URL param to find username, and body to update it
@@ -250,7 +250,7 @@ app.post('/user',
 
         // bcrypt doesn't throw errors on an empty string, so check plain req and we will hash the password later
         if (!username || !email || !req.body.password) {
-            res.status(400).send('Missing paramter(s) username, email, or password');
+            return res.status(400).send('Missing paramter(s) username, email, or password');
         }
 
         // Now that we know we have a password, let's hash it
@@ -305,8 +305,8 @@ app.delete('/user/:id',
         }
 
         // Compare URL to JWT
-        if (!req.user._id || req.params.id !== req.user._id) {
-            res.status(403).send('URL Parameter and authorized user mismatch');
+        if (!req.user._id || req.params.id !== req.user._id.toString()) {
+            return res.status(403).send('URL Parameter and authorized user mismatch');
         }
         user.deleteOne({
             _id: req.params.id,
@@ -337,7 +337,7 @@ app.post('/user/:username/favorites/:favorite',
 
         // Compare URL to JWT
         if (!req.params.username || req.params.username !== req.user.username) {
-            res.status(403).send('URL Parameter and authorized user mismatch');
+            return res.status(403).send('URL Parameter and authorized user mismatch');
         }
 
         const username = req.params.username;
@@ -352,7 +352,7 @@ app.post('/user/:username/favorites/:favorite',
         },
         {
             // Return the post-update object
-            returnNewDocument: true,
+            new: true,
             // Hide password in result
             projection: { password: 0 },
         }).then((result) => {
@@ -383,7 +383,7 @@ app.delete('/user/:username/favorites/:favorite',
 
         // Compare URL to JWT
         if (!req.params.username || req.params.username !== req.user.username) {
-            res.status(403).send('URL Parameter and authorized user mismatch');
+            return res.status(403).send('URL Parameter and authorized user mismatch');
         }
 
         const username = req.params.username;
@@ -398,7 +398,7 @@ app.delete('/user/:username/favorites/:favorite',
         },
         {
             // Return the post-update object
-            returnNewDocument: true,
+            new: true,
             // Hide password in result
             projection: { password: 0 },
         }).then((result) => {
