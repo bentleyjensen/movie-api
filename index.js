@@ -430,6 +430,6 @@ app.use((err, req, res, next) => {
     next();
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Listening on ${port}`);
 });
