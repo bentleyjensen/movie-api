@@ -1,0 +1,7 @@
+{
+    "JWTSecret": "$$JWT_SECRET",
+    "db": {
+        "user": "$$DB_USER",
+        "password": "$$DB_PASSWORD"
+    }
+}
