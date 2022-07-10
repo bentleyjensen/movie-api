@@ -1,0 +1,5 @@
+{"_id":{"$oid":"6293196ff04c1332bdae9499"},"username":"Bentley","password":"TestPassword1","birthdate":{"$date":"1991-01-01T00:00:00Z"},"favorites":[{"$oid":"6293196ff04c1332bdae9492"},{"$oid":"6293196ff04c1332bdae9490"}],"email":"Bentley@email.com"}
+{"_id":{"$oid":"6293196ff04c1332bdae949a"},"username":"Elyssa","password":"TestPassword1","birthdate":{"$date":"1992-02-02T00:00:00Z"},"favorites":[]}
+{"_id":{"$oid":"6293196ff04c1332bdae949b"},"username":"Collin","password":"OtherTestPassword1","birthdate":{"$date":"1993-03-03T00:00:00Z"},"favorites":[]}
+{"_id":{"$oid":"6293196ff04c1332bdae949c"},"username":"Breanna","password":"OtherTestPassword2","birthdate":{"$date":"1994-04-04T00:00:00Z"},"favorites":[]}
+{"_id":{"$oid":"6293196ff04c1332bdae949d"},"username":"Pip","password":"OtherTestPassword3","birthdate":{"$date":"1995-05-05T00:00:00Z"},"favorites":[]}
