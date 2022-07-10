@@ -1,3 +1,7 @@
 {
-    "JWTSecret": "SecretHere"
+    "JWTSecret": "SecretHere",
+    "db": {
+        "user": "username",
+        "password": "password"
+    }
 }
