@@ -41,7 +41,13 @@ module.exports = (router) => {
             req.login(user, {session: false}, (error) => {
                 if (error) res.send(error);
                 console.log('Generating JWT for user');
-                const token = generateToken(user.toJSON());
+                // Reduce information in JWT (no password hashes)
+                // Passport.js JWTStrategy pulls full user via db for use in router endpoints
+                const strippedUser = {
+                    username: user.username,
+                    _id: user._id,
+                };
+                const token = generateToken(strippedUser.toJSON());
 
                 return res.json({
                     token,

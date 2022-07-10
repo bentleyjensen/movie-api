@@ -186,34 +186,27 @@
         <p>Request Body: None</p>
         <p>Response: JSON Array of objects</p>
         <p>An array of movies, the same as from the <span class="pre">/movies</span> endpoint. This is simply a filter on the movies returned. If the genre cannot be found (i.e. it isn't returned from the <span class="pre">/genres</span> endpoint), a 404 and an error message are returned.</p>
-        <pre>refer to the /movies endpoint</pre> <h3><span class="method">GET</span> /users</h3>
-        <p>A list of all users</p>
-        <p>Request Body: None (Authentication required soon)</p>
-        <p>Response: JSON Array of Objects</p>
-        <p>The array contains multiple users objects.</p>
-        <pre>
-[
-    {
-        "_id": "6293196ff04c1332bdae9499",
-        "username": "Bentley",
-        "password": "TestPassword1",
-        "birthdate": "1991-01-01T00:00:00.000Z",
-        "favorites": [
-            "6293196ff04c1332bdae9492"
-        ],
-        "email": "Bentley@email.com"
-    },
-    {
-        "_id": "6293196ff04c1332bdae949a",
-        "username": "Elyssa",
-        "password": "TestPassword1",
-        "birthdate": "1992-02-02T00:00:00.000Z",
-        "favorites": []
-    }
-]</pre><br>
+        <pre>refer to the /movies endpoint</pre>
 
-        <h3><span class="method">GET</span> /users/{user}</h3>
-        <p>Request Body: None (Authentication required soon)</p>
+        <h1>Authorization</h1>
+        <p>Authorization is performed via the <span class="pre">/login</span> endpoint.
+            Endpoints requiring authentication must include the returned JWT as an <span class="pre">Authorization: Bearer</span> header, and match the username or id in the url (where applicable).</p> 
+
+        <h3><span class="method">POST</span> /login</h3>
+        <p>Obtain a JWT token for a user</p>
+        <p>Request Body: None</p>
+        <p>URL parameters: <span class="pre">username</span> and <span class="pre">password</span></p>
+        <p>Future goals for this endpoint include making it a request body setup and not a URL param setup.</p>
+        <pre>POST /login?username=myusername&password=mypassword</pre>
+        <p>Response: JSON Object</p>
+        <p>A JSON object with one key: <span class="pre">token</span> (or <span class="pre">error</span>), whose value is the JWT to return with other <span class="pre">/user</span> endpoints.</p>
+        <pre>{
+    token: foo.bar.baz
+}</pre><br>
+
+        <h3><span class="method">GET</span> /users/{username}</h3>
+        <p>Request Body: None</p>
+        <p>Authorization: Yes</p>
         <p>Response: JSON Object</p>
         <p>A specific users's information</p>
         <p>A JSON object representing a single user. If the user cannot be found, a 404 and an error message are returned.</p>
@@ -226,8 +219,9 @@
     "favorites": []
 }</pre><br>
 
-        <h3><span class="method">POST</span> /users</h3>
+        <h3><span class="method">POST</span> /user</h3>
         <p>Create a new user</p>
+        <p>Authorization: No</p>
         <p>Request Body: JSON representing the full user object (without _id)</p>
         <p><span class="pre">birthday</span> and <span class="pre">favorites</span> are optional, and <span class="pre">favorites</span> will be initialized to an empty array if not provided.</p>
         <pre>
@@ -243,7 +237,6 @@
         <pre>
 {
     "username": "NewTestUser",
-    "password": "TestPassword123",
     "email": "NewTestUser@email.com",
     "birthdate": "1992-02-02T00:00:00.000Z",
     "favorites": [],
@@ -251,9 +244,10 @@
     "__v": 0
 }</pre><br>
 
-        <h3><span class="method">PUT</span> /users/{username}</h3>
+        <h3><span class="method">PUT</span> /user/{username}</h3>
         <p>Update any of a user's information (except _id), including email, password and username.
             The username from the url is used for lookup, and the username is set with the username in the request body.</p>
+        <p>Authorization: Yes</p>
         <p>Request Body: A full user object with all keys</p>
         <pre>
 {
@@ -269,16 +263,16 @@
 {
     "_id": "62965c5f09241501a71be323",
     "username": "NewTestUser",
-    "password": "NewPassword1",
     "email": "NewTestUser@email.com",
     "birthdate": "1991-01-01T00:00:00.000Z",
     "favorites": [],
     "__v": 0
 }</pre><br>
 
-        <h3><span class="method">DELETE</span> /users/{userId}</h3>
+        <h3><span class="method">DELETE</span> /user/{userId}</h3>
         <p>Delete user whose id is <span class="pre">{userId}</span></p>
         <p>Request Body: None</p>
+        <p>Authorization: Yes</p>
         <p>Response: JSON</p>
         <p>A JSON with a <span class="pre">deletedCount</span> key. The count will be 1 if the user existed and was deleted, zero otherwise</p>
         <pre>
@@ -287,20 +281,20 @@
     "deletedCount": 1
 }</pre><br>
 
-        <h3><span class="method">POST</span> /users/{user}/favorites/{newFavorite}</h3>
+        <h3><span class="method">POST</span> /user/{user}/favorites/{newFavorite}</h3>
         <p>Add a movie to a user's favorites list. <span class="pre">{user}</span> should be a username, and
             <span class="pre">{newFavorite}</span> should be the <span class="pre">_id</span> of a movie.
             If a movie is already in the list, the return object is the same, and no duplicates are added.
-            The <span class="pre">PUT /users/{user}</span> endpoint can also update favorites, this is a
+            The <span class="pre">PUT /user/{user}</span> endpoint can also update favorites, this is a
             simpler endpoint that only does favorites and requires no request body. The return object is exactly the same.</p>
         <p>Request Body: none</p>
+        <p>Authorization: Yes</p>
         <p>Response: JSON of the full user object, with the updated favorites list.</p>
-        <pre>POST /users/Bentley/favorites/6293196ff04c1332bdae9490</pre>
+        <pre>POST /user/Bentley/favorites/6293196ff04c1332bdae9490</pre>
         <pre>
 {
     "_id": "6293196ff04c1332bdae9499",
     "username": "Bentley",
-    "password": "TestPassword1",
     "birthdate": "1991-01-01T00:00:00.000Z",
     "favorites": [
         "6293196ff04c1332bdae9492",
@@ -309,20 +303,20 @@
     "email": "Bentley@email.com"
 }</pre><br>
 
-        <h3><span class="method">DELETE</span> /users/{user}/favorites/{oldFavorite}</h3>
+        <h3><span class="method">DELETE</span> /user/{user}/favorites/{oldFavorite}</h3>
         <p>Remove a movie to a user's favorites list. <span class="pre">{user}</span> should be a username, and
             <span class="pre">{oldFavorite}</span> should be the <span class="pre">_id</span> of a movie.
             If a movie is already missing from the list, the return object is the same, and nothing was changed.
-            The <span class="pre">PUT /users/{user}</span> endpoint can also update favorites, this is a
+            The <span class="pre">PUT /user/{user}</span> endpoint can also update favorites, this is a
             simpler endpoint that only does favorites and requires no request body. The return object is exactly the same.</p>
         <p>Request Body: none</p>
+        <p>Authorization: Yes</p>
         <p>Response: JSON of the full user object, with the updated favorites list.</p>
-        <pre>DELETE /users/Bentley/favorites/6293196ff04c1332bdae9490</pre>
+        <pre>DELETE /user/Bentley/favorites/6293196ff04c1332bdae9490</pre>
         <pre>
 {
     "_id": "6293196ff04c1332bdae9499",
     "username": "Bentley",
-    "password": "TestPassword1",
     "birthdate": "1991-01-01T00:00:00.000Z",
     "favorites": [
         "6293196ff04c1332bdae9492"

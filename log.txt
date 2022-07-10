@@ -140,3 +140,55 @@
 2022-07-03T18:58:25.011Z POST /login?username=NewTestUser&password=TestPassword123 200 468 - 126.952 ms
 2022-07-03T18:58:29.340Z POST /login?username=NewTestUser&password=TestPassword1234 400 123 - 108.306 ms
 2022-07-03T18:58:34.430Z POST /login?username=NewTestUser&password=TestPassword123 200 468 - 126.090 ms
+2022-07-04T19:07:52.807Z GET / 200 247 - 8.381 ms
+2022-07-04T19:07:52.907Z GET /favicon.ico 404 150 - 5.661 ms
+2022-07-04T19:12:00.084Z GET / 200 247 - 3.979 ms
+2022-07-04T19:20:57.886Z Error: Invalid locale '[object Object]'
+2022-07-04T19:20:57.886Z Error stack trace: Error: Invalid locale '[object Object]'
+    at StandardValidation.isAlphanumeric [as validator] (/Users/bentley/Workspace/movie-api/node_modules/validator/lib/isAlphanumeric.js:36:9)
+    at StandardValidation.run (/Users/bentley/Workspace/movie-api/node_modules/express-validator/src/context-items/standard-validation.js:12:29)
+    at /Users/bentley/Workspace/movie-api/node_modules/express-validator/src/chain/context-runner-impl.js:36:39
+    at Array.map (<anonymous>)
+    at ContextRunnerImpl.run (/Users/bentley/Workspace/movie-api/node_modules/express-validator/src/chain/context-runner-impl.js:29:70)
+    at middleware (/Users/bentley/Workspace/movie-api/node_modules/express-validator/src/middlewares/check.js:15:26)
+    at Layer.handle [as handle_request] (/Users/bentley/Workspace/movie-api/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/bentley/Workspace/movie-api/node_modules/express/lib/router/route.js:144:13)
+    at middleware (/Users/bentley/Workspace/movie-api/node_modules/express-validator/src/middlewares/check.js:16:13)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+2022-07-04T19:20:57.895Z POST /users/ 500 1476 - 65.601 ms
+2022-07-04T19:38:45.975Z POST /users/ 422 258 - 48.231 ms
+2022-07-04T19:40:26.648Z POST /users/ 422 395 - 38.446 ms
+2022-07-04T19:40:34.041Z POST /users/ 422 352 - 5.988 ms
+2022-07-04T19:40:43.574Z POST /users/ 422 258 - 1.968 ms
+2022-07-04T19:40:50.629Z POST /users/ 422 355 - 1.565 ms
+2022-07-04T19:40:58.616Z POST /users/ 422 353 - 1.977 ms
+2022-07-04T19:41:07.624Z POST /users/ 422 258 - 5.093 ms
+2022-07-04T19:41:21.075Z POST /users/ 422 89 - 1.575 ms
+2022-07-04T19:41:29.741Z POST /users/ 422 89 - 1.398 ms
+2022-07-04T19:41:35.540Z POST /users/ 422 89 - 1.898 ms
+2022-07-04T19:41:43.774Z POST /users/ 422 89 - 1.930 ms
+2022-07-04T19:42:36.301Z POST /users/ 422 89 - 1.745 ms
+2022-07-04T19:55:05.525Z POST /users/ 422 89 - 42.571 ms
+2022-07-04T19:55:17.910Z POST /users/ 422 89 - 5.980 ms
+2022-07-04T19:56:03.482Z POST /users/ 422 89 - 2.138 ms
+2022-07-04T19:56:14.131Z POST /users/ 422 89 - 1.685 ms
+2022-07-04T20:09:11.333Z POST /users/ 422 89 - 36.726 ms
+2022-07-04T20:09:15.082Z POST /users/ 422 89 - 5.875 ms
+2022-07-04T20:09:33.065Z POST /users/ 422 89 - 48.744 ms
+2022-07-04T20:09:56.257Z POST /users/ 201 169 - 166.534 ms
+2022-07-04T20:10:51.454Z POST /login?username=NewTestUser_-&password=TestPassword123@ 400 123 - 5.111 ms
+2022-07-04T20:11:05.748Z POST /login?username=NewTestUser-_&password=TestPassword123@ 200 473 - 116.118 ms
+2022-07-04T23:59:21.964Z POST /users/ 400 80 - 105.577 ms
+2022-07-09T22:49:03.370Z GET / 304 - - 13.654 ms
+2022-07-09T22:49:03.577Z GET /favicon.ico 404 150 - 10.149 ms
+2022-07-09T22:49:05.521Z GET /documentation 200 15337 - 5.574 ms
+2022-07-09T22:49:41.136Z GET /documentation 200 15337 - 2.915 ms
+2022-07-09T22:53:26.531Z POST /login?username=NewUserTest&password=TestPassword123@ 400 123 - 24.651 ms
+2022-07-09T22:55:01.239Z DELETE /users/62c34914b1a4c501684e8625 401 - - 4.078 ms
+2022-07-09T22:55:40.878Z GET /users/ 404 145 - 4.457 ms
+2022-07-09T22:56:13.770Z GET /user/NewTestUser1 401 - - 3.329 ms
+2022-07-10T05:05:14.470Z GET /documentation 200 15327 - 24.699 ms
+2022-07-10T05:30:07.163Z GET /documentation 200 14678 - 2.761 ms
+2022-07-10T05:31:55.086Z GET /documentation 304 - - 5.346 ms
+2022-07-10T05:32:16.316Z GET /documentation 200 14678 - 1.559 ms
+2022-07-10T05:32:26.302Z GET /documentation 200 14680 - 2.180 ms

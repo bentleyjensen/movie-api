@@ -8,18 +8,13 @@ const path = require('path');
 const port = process.env.PORT || 8000;
 const mongoose = require('mongoose');
 const {movie, user, director} = require('./models');
+const { check, validationResult } = require('express-validator');
 
 mongoose.connect('mongodb://localhost:27017/movies', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // File stream to append to log
 const logStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
 const logTemplate = ':date[iso] :method :url :status :res[content-length] - :response-time ms';
-
-function authorizeUser(req, res, next) {
-    // TODO: Impletement
-    // Denial of Authorization is a 404, not a redirect.
-    next();
-}
 
 // Run before Each request handler
 app.use(morgan(logTemplate, { stream: logStream }));
@@ -44,8 +39,6 @@ const passport = require('passport');
 // bring in login endpoint
 require('./auth')(app);
 require('./passport');
-
-app.use(authorizeUser);
 
 // Static files served from the /public folder
 app.use(express.static('public'));
@@ -139,37 +132,38 @@ app.get('/movies/genre/:genre', (req, res) => {
         });
 });
 
-app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
-    user.find({}, {
-        // Hide password in result objects
-        password: 0,
-    })
-        .then((result) => {
-            res.status(200).send(result);
-        }).catch((err) => {
-            console.log('\n\n\nERROR:\n');
-            console.log(err);
-            res.status(500).send(err);
-        });
-});
+app.get('/user/:username', 
+    [
+        passport.authenticate('jwt', { session: false }),
+        check('username', 'Username must be 8-63 characters').isString().isLength({ min: 8, max: 63 }),
+        check('username', 'Username must only contain letters, numbers, underscore and dash').isAlphanumeric('en-US', { ignore: '_-' }),
+    ],
+    (req, res) => {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) {
+            return res.status(422).json({ errors: validationErrors.array() });
+        }
 
-app.get('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
-    user.findOne({ username: req.params.username }, {
-        // Hide password in result object
-        password: 0,
-    })
-        .then((result) => {
-            if (result) {
-                res.status(200).send(result);
-            } else {
-                res.status(404).send(`Could not find user with username: ${req.params.username}`);
-            }
-        }).catch((err) => {
-            console.log('\n\n\nERROR:\n');
-            console.log(err);
-            res.status(500).send(err);
-        });
-});
+        //                          Compare URL        to        JWT
+        if (!req.user.username || req.params.username !== req.user.username) {
+            res.status(403).send('URL Parameter and authorized user mismatch');
+        }
+        user.findOne({ username: req.user.username }, {
+            // Hide password in result object
+            password: 0,
+        })
+            .then((result) => {
+                if (result) {
+                    res.status(200).send(result);
+                } else {
+                    res.status(404).send(`Could not find user with username: ${req.user.username}`);
+                }
+            }).catch((err) => {
+                console.log('\n\n\nERROR:\n');
+                console.log(err);
+                res.status(500).send(err);
+            });
+    });
 
 // Expects a full user object:
 // {
@@ -179,18 +173,181 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), (r
 //    birthdate: ...,
 //    favorites: ...,
 // }
-app.put('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
-    // Use URL param to find username, and body to update it
-    // This enables a user to change their username
-    const hashedPass = user.hashPassword(req.body.password);
-    user.findOneAndUpdate({ username: req.params.username },
-        {
-            $set: {
-                username: req.body.username,
-                password: hashedPass,
-                email: req.body.email,
-                birthdate: req.body.birthdate,
-                favorites: req.body.favorites,
+app.put('/user/:username',
+    [
+        passport.authenticate('jwt', { session: false }),
+        check('username', 'Username must be 8-63 characters').isString().isLength({ min: 8, max: 63 }),
+        check('username', 'Username must only contain letters, numbers, underscore and dash').isAlphanumeric('en-US', { ignore: '_-' }),
+        check('email', 'Email must be valid').isEmail(),
+        check('password', 'Password must be 8 characters and contain an uppercase letter, lowercase letter, a number, and a symbol').isStrongPassword(),
+        check('birthdate', 'Birthdate must be a valid date').isDate(),
+        check('favorites', 'Favorites must be MongoID').isMongoId(),
+    ],
+    (req, res) => {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) {
+            return res.status(422).json({ errors: validationErrors.array() });
+        }
+
+        //                          Compare URL        to        JWT
+        if (!req.user.username || req.params.username !== req.user.username) {
+            res.status(403).send('URL Parameter and authorized user mismatch');
+        }
+        const hashedPass = user.hashPassword(req.body.password);
+        // Use URL param to find username, and body to update it
+        // This enables a user to change their username
+        user.findOneAndUpdate({ username: req.params.username },
+            {
+                $set: {
+                    username: req.body.username,
+                    password: hashedPass,
+                    email: req.body.email,
+                    birthdate: req.body.birthdate,
+                    favorites: req.body.favorites,
+                },
+            },
+            {
+                // Return the post-update object
+                returnNewDocument: true,
+                // Hide password in result
+                projection: { password: 0 },
+            })
+            .then((result) => {
+                if (!result) {
+                    // With JWT auth, this should never happen, but leave it here just in case
+                    res.status(404).send(`Could not find user ${req.params.username}`);
+                } else {
+                    res.status(200).send(result);
+                }
+            }).catch((err) => {
+                if (err.name === 'CastError') {
+                    res.status(400).send('One or more keys were of an invalid type and could not be coerced to the correct type.');
+                } else {
+                    console.log('\n\n\nERROR:\n');
+                    console.log(err);
+                    res.status(500).send(err);
+                }
+            });
+    });
+
+// No Auth needed to create a new user
+app.post('/user',
+    [
+        check('username', 'Username must be 8-63 characters').isString().isLength({ min: 8, max: 63 }),
+        check('username', 'Username must only contain letters, numbers, underscore and dash').isAlphanumeric('en-US', { ignore: '_-' }),
+        check('email', 'Email must be valid').isEmail(),
+        check('password', 'Password must be 8 characters and contain: an uppercase letter, a lowercase letter, a number, and a symbol').isStrongPassword(),
+        check('birthdate', 'Birthdate must be a valid ISO 8601 date').isISO8601(),
+    ],
+    (req, res) => {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) {
+            return res.status(422).json({ errors: validationErrors.array() });
+        }
+
+        const username = req.body.username.toLowerCase();
+        const email = req.body.email;
+
+        // bcrypt doesn't throw errors on an empty string, so check plain req and we will hash the password later
+        if (!username || !email || !req.body.password) {
+            res.status(400).send('Missing paramter(s) username, email, or password');
+        }
+
+        // Now that we know we have a password, let's hash it
+        const hashedPass = user.hashPassword(req.body.password);
+
+        // Verify username is not taken and email is not used
+        user.findOne({
+            $or: [
+                { username: username },
+                { email: email },
+            ],
+        }).then((result) => {
+            if (result) {
+                res.status(400).send(`user with username "${username}" or email "${email}" already exists`);
+            } else {
+                user.create({
+                    username: req.body.username,
+                    password: hashedPass,
+                    email: req.body.email,
+                    birthdate: req.body.birthdate,
+                    favorites: [],
+                }).then((newResult) => {
+                // So, create() doesn't suport projections, and
+                // for some reason using `delete newResult.password` doesn't appear to work
+                    newResult.password = undefined;
+                    delete newResult.password;
+                    console.log('User post-delete newResult.password:');
+                    console.log(newResult);
+                    res.status(201).send(newResult);
+                });
+            }
+        }).catch((err) => {
+            if (err.name === 'CastError') {
+                res.status(400).send('One or more keys were of an invalid type and could not be coerced to the correct type.');
+            } else {
+                console.log('\n\n\nERROR:\n');
+                console.log(err);
+                res.status(500).send(err);
+            }
+        });
+    });
+
+app.delete('/user/:id',
+    [
+        passport.authenticate('jwt', { session: false }),
+        check('id', 'ID must be valid Mongo ID').isMongoId(),
+    ],
+    (req, res) => {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) {
+            return res.status(422).json({ errors: validationErrors.array() });
+        }
+
+        // Compare URL to JWT
+        if (!req.user._id || req.params.id !== req.user._id) {
+            res.status(403).send('URL Parameter and authorized user mismatch');
+        }
+        user.deleteOne({
+            _id: req.params.id,
+        }).then((result) => {
+            res.status(200).send(result);
+        }).catch((err) => {
+            if (err.name === 'CastError') {
+                res.status(400).send('One or more URL parameters were of an invalid type');
+            } else {
+                console.log('\n\n\nERROR:\n');
+                console.log(err);
+                res.status(500).send(err);
+            }
+        });
+    });
+
+app.post('/user/:username/favorites/:favorite', 
+    [
+        passport.authenticate('jwt', { session: false }),
+        check('username', 'Invalid Username').isString().isAlphanumeric('en-US', { ignore: '_-' }),
+        check('favorite', 'Favorite is not valid MongoID').isMongoId(),
+    ],
+    (req, res) => {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) {
+            return res.status(422).json({ errors: validationErrors.array() });
+        }
+
+        // Compare URL to JWT
+        if (!req.params.username || req.params.username !== req.user.username) {
+            res.status(403).send('URL Parameter and authorized user mismatch');
+        }
+
+        const username = req.params.username;
+        const favorite = req.params.favorite;
+
+        user.findOneAndUpdate({
+            username: username,
+        }, {
+            $addToSet: {
+                favorites: favorite,
             },
         },
         {
@@ -198,147 +355,68 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }), (r
             returnNewDocument: true,
             // Hide password in result
             projection: { password: 0 },
-        })
-        .then((result) => {
-            if (!result) {
-                res.status(404).send(`Could not find user ${req.params.username}`);
-            } else {
-                res.status(200).send(result);
-            }
+        }).then((result) => {
+            res.status(200).send(result);
         }).catch((err) => {
             if (err.name === 'CastError') {
-                res.status(400).send('One or more keys were of an invalid type');
+                res.status(400).send('One or more URL parameters were of an invalid type');
             } else {
                 console.log('\n\n\nERROR:\n');
                 console.log(err);
                 res.status(500).send(err);
             }
         });
-});
 
-// No Auth needed to create a new user
-app.post('/users', (req, res) => {
-    const username = req.body.username;
-    const email = req.body.email;
-
-    // bcrypt creates a hash with an empty string, so check req and hash later
-    if (!username || !email || !req.body.password) {
-        res.status(400).send('Missing paramter(s) username, email, or password');
-    }
-
-    const hashedPass = user.hashPassword(req.body.password);
-
-    // Verify username is not taken and email is not used
-    user.findOne({
-        $or: [
-            {username: req.body.username},
-            {email: req.body.email},
-        ],
-    }).then((result) => {
-        if (result) {
-            res.status(400).send(`user with username "${username}" or email "${email}" already exists`);
-        } else {
-            user.create({
-                username: req.body.username,
-                password: hashedPass,
-                email: req.body.email,
-                birthdate: req.body.birthdate,
-                favorites: req.body.favorites,
-            }).then((newResult) => {
-                // For some reason using `delete newResult.password` doesn't work
-                newResult.password = '';
-                res.status(201).send(newResult);
-            });
-        }
-    }).catch((err) => {
-        if (err.name === 'CastError') {
-            res.status(400).send('One or more keys were an invalid type');
-        } else {
-            console.log('\n\n\nERROR:\n');
-            console.log(err);
-            res.status(500).send(err);
-        }
     });
-});
 
-app.delete('/users/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
-    user.deleteOne({
-        _id: req.params.id,
-    }).then((result) => {
-        res.status(200).send(result);
-    }).catch((err) => {
-        if (err.name === 'CastError') {
-            res.status(400).send('One or more URL parameters were of an invalid type');
-        } else {
-            console.log('\n\n\nERROR:\n');
-            console.log(err);
-            res.status(500).send(err);
+app.delete('/user/:username/favorites/:favorite', 
+    [
+        passport.authenticate('jwt', { session: false }),
+        check('username', 'Invalid Username').isString().isAlphanumeric('en-US', { ignore: '_-' }),
+        check('favorite', 'Favorite is not valid MongoID').isMongoId(),
+    ],
+    (req, res) => {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) {
+            return res.status(422).json({ errors: validationErrors.array() });
         }
-    });
-});
 
-app.post('/users/:username/favorites/:favorite', passport.authenticate('jwt', { session: false }), (req, res) => {
-    const username = req.params.username;
-    const favorite = req.params.favorite;
+        // Compare URL to JWT
+        if (!req.params.username || req.params.username !== req.user.username) {
+            res.status(403).send('URL Parameter and authorized user mismatch');
+        }
 
-    user.findOneAndUpdate({
-        username: username,
-    }, {
-        $addToSet: {
-            favorites: favorite,
+        const username = req.params.username;
+        const favorite = req.params.favorite;
+
+        user.findOneAndUpdate({
+            username: username,
+        }, {
+            $pull: {
+                favorites: favorite,
+            },
         },
-    },
-    {
-        // Return the post-update object
-        returnNewDocument: true,
-        // Hide password in result
-        projection: { password: 0 },
-    }).then((result) => {
-        res.status(200).send(result);
-    }).catch((err) => {
-        if (err.name === 'CastError') {
-            res.status(400).send('One or more URL parameters were of an invalid type');
-        } else {
-            console.log('\n\n\nERROR:\n');
-            console.log(err);
-            res.status(500).send(err);
-        }
+        {
+            // Return the post-update object
+            returnNewDocument: true,
+            // Hide password in result
+            projection: { password: 0 },
+        }).then((result) => {
+            if (!result) {
+                res.status(404).send(`Could not find user with username ${username}`);
+            } else {
+                res.status(200).send(result);
+            }
+        }).catch((err) => {
+            if (err.name === 'CastError') {
+                res.status(400).send('One or more URL parameters were of an invalid type');
+            } else {
+                console.log('\n\n\nERROR:\n');
+                console.log(err);
+                res.status(500).send(err);
+            }
+        });
     });
-
-});
-
-app.delete('/users/:username/favorites/:favorite', passport.authenticate('jwt', { session: false }), (req, res) => {
-    const username = req.params.username;
-    const favorite = req.params.favorite;
-
-    user.findOneAndUpdate({
-        username: username,
-    }, {
-        $pull: {
-            favorites: favorite,
-        },
-    },
-    {
-        // Return the post-update object
-        returnNewDocument: true,
-        // Hide password in result
-        projection: { password: 0 },
-    }).then((result) => {
-        if (!result) {
-            res.status(404).send(`Could not find user with username ${username}`);
-        } else {
-            res.status(200).send(result);
-        }
-    }).catch((err) => {
-        if (err.name === 'CastError') {
-            res.status(400).send('One or more URL parameters were of an invalid type');
-        } else {
-            console.log('\n\n\nERROR:\n');
-            console.log(err);
-            res.status(500).send(err);
-        }
-    });
-});
 
 
 // Master Error Handler
