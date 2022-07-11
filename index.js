@@ -15,14 +15,16 @@ const config = require('getconfig');
 //mongoose.connect('mongodb://localhost:27017/movies', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Production
-mongoose.connect(`mongodb+srv://${config.db.user}:${config.db.password}@cluster0.zwntybw.mongodb.net/?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect(`mongodb+srv://${config.db.user}:${config.db.password}@cluster0.zwntybw.mongodb.net/?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // File stream to append to log
 // const logStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
-const logTemplate = ':date[iso] :method :url :status :res[content-length] - :response-time ms';
-
+// const logTemplate = ':date[iso] :method :url :status :res[content-length] - :response-time ms';
 // Run before Each request handler
 // app.use(morgan(logTemplate, { stream: logStream }));
+
+const logTemplate = ':method :url :status :res[content-length] - :response-time ms';
 app.use(morgan(logTemplate));
 
 app.use(bodyParser.json());
