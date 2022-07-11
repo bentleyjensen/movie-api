@@ -15,7 +15,7 @@ const config = require('getconfig');
 //mongoose.connect('mongodb://localhost:27017/movies', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Production
-mongoose.connect`mongodb+srv://${config.db.user}:${config.db.password}@cluster0.zwntybw.mongodb.net/?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(`mongodb+srv://${config.db.user}:${config.db.password}@cluster0.zwntybw.mongodb.net/?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // File stream to append to log
 const logStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
