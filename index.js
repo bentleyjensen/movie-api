@@ -18,11 +18,12 @@ const config = require('getconfig');
 mongoose.connect(`mongodb+srv://${config.db.user}:${config.db.password}@cluster0.zwntybw.mongodb.net/?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // File stream to append to log
-const logStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
+// const logStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
 const logTemplate = ':date[iso] :method :url :status :res[content-length] - :response-time ms';
 
 // Run before Each request handler
-app.use(morgan(logTemplate, { stream: logStream }));
+// app.use(morgan(logTemplate, { stream: logStream }));
+app.use(morgan(logTemplate));
 
 app.use(bodyParser.json());
 
