@@ -47,20 +47,20 @@ require('./passport');
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-    res.sendFile('index.html', { root: `${__dirname}/public` });
+    return res.sendFile('index.html', { root: `${__dirname}/public` });
 });
 
 app.get('/documentation', (req, res) => {
-    res.sendFile('documentation.html', { root: `${__dirname}/public` });
+    return res.sendFile('documentation.html', { root: `${__dirname}/public` });
 });
 
 app.get('/movies', (req, res) => {
     movie.find()
         .populate('director')
         .then((result) => {
-            res.status(200).json(result);
+            return res.status(200).json(result);
         }).catch((err) => {
-            res.status(500).send(err);
+            return res.status(500).send(err);
         });
 });
 
@@ -68,17 +68,17 @@ app.get('/movies/title/:title', (req, res) => {
     movie.findOne({title: req.params.title})
         .then((result) => {
             if (result) {
-                res.status(200).send(result);
+                return res.status(200).send(result);
             } else {
-                res.status(404).send(`Could not find movie with title ${req.params.title}`);
+                return res.status(404).send(`Could not find movie with title ${req.params.title}`);
             }
         }).catch((err) => {
             if (err.name === 'CastError') {
-                res.status(400).send('One or more URL parameters were of an invalid type');
+                return res.status(400).send('One or more URL parameters were of an invalid type');
             } else {
                 console.log('\n\n\nERROR:\n');
                 console.log(err);
-                res.status(500).send(err);
+                return res.status(500).send(err);
             }
         });
 });
@@ -86,11 +86,11 @@ app.get('/movies/title/:title', (req, res) => {
 app.get('/directors', (req, res) => {
     director.find()
         .then((result) => {
-            res.status(200).send(result);
+            return res.status(200).send(result);
         }).catch((err) => {
             console.log('\n\n\nERROR:\n');
             console.log(err);
-            res.status(500).send(err);
+            return res.status(500).send(err);
         });
 });
 
@@ -98,25 +98,25 @@ app.get('/directors/:name', (req, res) => {
     director.findOne({name: req.params.name})
         .then((result) => {
             if (result) {
-                res.status(200).send(result);
+                return res.status(200).send(result);
             } else {
-                res.status(404).send(`Could not find director ${req.params.name}`);
+                return res.status(404).send(`Could not find director ${req.params.name}`);
             }
         }).catch((err) => {
             console.log('\n\n\nERROR:\n');
             console.log(err);
-            res.status(500).send(err);
+            return res.status(500).send(err);
         });
 });
 
 app.get('/genres', (req, res) => {
     movie.distinct('genre')
         .then((result) => {
-            res.status(200).send(result);
+            return res.status(200).send(result);
         }).catch((err) => {
             console.log('\n\n\nERROR:\n');
             console.log(err);
-            res.status(500).send(err);
+            return res.status(500).send(err);
         });
 });
 
@@ -124,14 +124,14 @@ app.get('/movies/genre/:genre', (req, res) => {
     movie.find({ 'genre.name': req.params.genre })
         .then((result) => {
             if (!result || (Array.isArray(result) && result.length === 0)) {
-                res.status(404).send(`Cannot find any movies with genre ${req.params.genre}`);
+                return res.status(404).send(`Cannot find any movies with genre ${req.params.genre}`);
             } else {
-                res.status(200).send(result);
+                return res.status(200).send(result);
             }
         }).catch((err) => {
             console.log('\n\n\nERROR:\n');
             console.log(err);
-            res.status(500).send(err);
+            return res.status(500).send(err);
         });
 });
 
@@ -157,14 +157,14 @@ app.get('/user/:username',
         })
             .then((result) => {
                 if (result) {
-                    res.status(200).send(result);
+                    return res.status(200).send(result);
                 } else {
-                    res.status(404).send(`Could not find user with username: ${req.user.username}`);
+                    return res.status(404).send(`Could not find user with username: ${req.user.username}`);
                 }
             }).catch((err) => {
                 console.log('\n\n\nERROR:\n');
                 console.log(err);
-                res.status(500).send(err);
+                return res.status(500).send(err);
             });
     });
 
@@ -211,24 +211,24 @@ app.put('/user/:username',
             },
             {
                 // Return the post-update object
-                returnNewDocument: true,
+                new: true,
                 // Hide password in result
                 projection: { password: 0 },
             })
             .then((result) => {
                 if (!result) {
                     // With JWT auth, this should never happen, but leave it here just in case
-                    res.status(404).send(`Could not find user ${req.params.username}`);
+                    return res.status(404).send(`Could not find user ${req.params.username}`);
                 } else {
-                    res.status(200).send(result);
+                    return res.status(200).send(result);
                 }
             }).catch((err) => {
                 if (err.name === 'CastError') {
-                    res.status(400).send('One or more keys were of an invalid type and could not be coerced to the correct type.');
+                    return res.status(400).send('One or more keys were of an invalid type and could not be coerced to the correct type.');
                 } else {
                     console.log('\n\n\nERROR:\n');
                     console.log(err);
-                    res.status(500).send(err);
+                    return res.status(500).send(err);
                 }
             });
     });
@@ -267,7 +267,7 @@ app.post('/user',
             ],
         }).then((result) => {
             if (result) {
-                res.status(400).send(`user with username "${username}" or email "${email}" already exists`);
+                return res.status(400).send(`user with username "${username}" or email "${email}" already exists`);
             } else {
                 user.create({
                     username: req.body.username,
@@ -282,16 +282,16 @@ app.post('/user',
                     delete newResult.password;
                     console.log('User post-delete newResult.password:');
                     console.log(newResult);
-                    res.status(201).send(newResult);
+                    return res.status(201).send(newResult);
                 });
             }
         }).catch((err) => {
             if (err.name === 'CastError') {
-                res.status(400).send('One or more keys were of an invalid type and could not be coerced to the correct type.');
+                return res.status(400).send('One or more keys were of an invalid type and could not be coerced to the correct type.');
             } else {
                 console.log('\n\n\nERROR:\n');
                 console.log(err);
-                res.status(500).send(err);
+                return res.status(500).send(err);
             }
         });
     });
@@ -314,14 +314,14 @@ app.delete('/user/:id',
         user.deleteOne({
             _id: req.params.id,
         }).then((result) => {
-            res.status(200).send(result);
+            return res.status(200).send(result);
         }).catch((err) => {
             if (err.name === 'CastError') {
-                res.status(400).send('One or more URL parameters were of an invalid type');
+                return res.status(400).send('One or more URL parameters were of an invalid type');
             } else {
                 console.log('\n\n\nERROR:\n');
                 console.log(err);
-                res.status(500).send(err);
+                return res.status(500).send(err);
             }
         });
     });
@@ -359,14 +359,14 @@ app.post('/user/:username/favorites/:favorite',
             // Hide password in result
             projection: { password: 0 },
         }).then((result) => {
-            res.status(200).send(result);
+            return res.status(200).send(result);
         }).catch((err) => {
             if (err.name === 'CastError') {
-                res.status(400).send('One or more URL parameters were of an invalid type');
+                return res.status(400).send('One or more URL parameters were of an invalid type');
             } else {
                 console.log('\n\n\nERROR:\n');
                 console.log(err);
-                res.status(500).send(err);
+                return res.status(500).send(err);
             }
         });
 
@@ -406,17 +406,17 @@ app.delete('/user/:username/favorites/:favorite',
             projection: { password: 0 },
         }).then((result) => {
             if (!result) {
-                res.status(404).send(`Could not find user with username ${username}`);
+                return res.status(404).send(`Could not find user with username ${username}`);
             } else {
-                res.status(200).send(result);
+                return res.status(200).send(result);
             }
         }).catch((err) => {
             if (err.name === 'CastError') {
-                res.status(400).send('One or more URL parameters were of an invalid type');
+                return res.status(400).send('One or more URL parameters were of an invalid type');
             } else {
                 console.log('\n\n\nERROR:\n');
                 console.log(err);
-                res.status(500).send(err);
+                return res.status(500).send(err);
             }
         });
     });
