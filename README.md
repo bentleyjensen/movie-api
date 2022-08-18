@@ -1,5 +1,15 @@
 # move-api
  a little movie api with details
 
+## Starting
 
-Make sure to update the JWTSecret in config/default.json! Or you'll get hacked :)
+Get mongo running:
+```
+brew tap mongodb/brew
+brew install mongodb-community
+brew services start mongodb-community
+```
+
+To seed the db, run `mongosh`in your shell, then paste the contents of seedData/mongo/mongo-seed.js.
+
+You'll need to update the connection link in index.js, in the `mongoose.connect` lines (lines 14 and/or 17).
