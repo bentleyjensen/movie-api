@@ -24,7 +24,7 @@ app.use(morgan(logTemplate, { stream: logStream }));
 
 app.use(bodyParser.json());
 
-const allowedOrigins = ['http://localhost:8080'];
+const allowedOrigins = ['http://localhost:8080', 'http://localhost:1234'];
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.indexOf(origin) >= 0) {
