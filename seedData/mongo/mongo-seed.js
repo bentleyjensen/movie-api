@@ -1,4 +1,8 @@
-let db, ObjectId;
+use movies;
+
+db.createCollection('movies');
+db.createCollection('users');
+db.createCollection('directors');
 
 db.movies.insertMany([
     {
