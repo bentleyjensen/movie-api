@@ -11,10 +11,10 @@ const {movie, user, director} = require('./models');
 const { check, validationResult } = require('express-validator');
 
 // local for testing
-mongoose.connect('mongodb://localhost:27017/movies', { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect('mongodb://localhost:27017/movies', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Production
-// mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // File stream to append to log
 const logStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
