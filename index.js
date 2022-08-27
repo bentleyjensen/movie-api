@@ -11,10 +11,10 @@ const {movie, user, director} = require('./models');
 const { check, validationResult } = require('express-validator');
 
 // local for testing
-// mongoose.connect('mongodb://localhost:27017/movies', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/movies', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Production
-mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // File stream to append to log
 const logStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
@@ -27,6 +27,7 @@ app.use(bodyParser.json());
 const allowedOrigins = ['http://localhost:8080', 'http://localhost:1234', 'https://calm-atoll-49801.herokuapp.com/'];
 app.use(cors({
     origin: (origin, callback) => {
+        console.log(`Request received from origin: ${origin}`)
         if (!origin || allowedOrigins.indexOf(origin) >= 0) {
             callback(null, true);
         } else {
