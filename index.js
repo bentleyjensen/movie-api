@@ -24,7 +24,9 @@ app.use(morgan(logTemplate, { stream: logStream }));
 
 app.use(bodyParser.json());
 
-app.use(cors());
+app.use(cors({
+    origin: '*',
+}));
 // const allowedOrigins = ['http://localhost:8080', 'http://localhost:1234', 'https://calm-atoll-49801.herokuapp.com/'];
 // app.use(cors({
 //     origin: (origin, callback) => {
