@@ -27,13 +27,13 @@ app.use(bodyParser.json());
 const allowedOrigins = ['http://localhost:8080', 'http://localhost:1234', 'https://calm-atoll-49801.herokuapp.com/'];
 app.use(cors({
     origin: (origin, callback) => {
-        console.log(`Request received from origin: ${origin}`)
-        if (!origin || allowedOrigins.indexOf(origin) >= 0) {
+        console.log(`Request received from origin: ${origin}`);
+        // if (!origin || allowedOrigins.indexOf(origin) >= 0) {
             callback(null, true);
-        } else {
-            const message = `The CORS Policy for this application does not allow access from origin ${origin}`;
-            return callback(new Error(message), false);
-        }
+        // } else {
+            // const message = `The CORS Policy for this application does not allow access from origin ${origin}`;
+            // return callback(new Error(message), false);
+        // }
     },
 }));
 
