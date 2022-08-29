@@ -251,9 +251,7 @@ app.post('/user/register',
         if (!validationErrors.isEmpty()) {
             return res.status(422).json({ errors: validationErrors.array() });
         }
-        const lowName = req.body.username.toLowerCase();
-        console.log(`Creating user: ${lowName}`);
-        const username = lowName;
+        const username = req.body.username.toLowerCase();
         const email = req.body.email;
 
         // bcrypt doesn't throw errors on an empty string, so check plain req and we will hash the password later
@@ -275,7 +273,7 @@ app.post('/user/register',
                 return res.status(400).send(`user with username "${username}" or email "${email}" already exists`);
             } else {
                 user.create({
-                    username: req.body.username,
+                    username: username,
                     password: hashedPass,
                     email: req.body.email,
                     birthdate: req.body.birthdate,
