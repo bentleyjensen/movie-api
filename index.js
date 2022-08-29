@@ -187,7 +187,7 @@ app.put('/user/:username',
         check('username', 'Username must only contain letters, numbers, underscore and dash').isAlphanumeric('en-US', { ignore: '_-' }),
         check('email', 'Email must be valid').isEmail(),
         check('password', 'Password must be 8 characters and contain an uppercase letter, lowercase letter, a number, and a symbol').isStrongPassword(),
-        check('birthdate', 'Birthdate must be a valid date').isDate(),
+        check('birthdate', 'Birthdate must be a valid date').isISO8601(),
         check('favorites.*', 'Favorites must be MongoID').isMongoId(),
     ],
     (req, res) => {
@@ -238,12 +238,12 @@ app.put('/user/:username',
     });
 
 // No Auth needed to create a new user
-app.post('/user',
+app.post('/user/register',
     [
         check('username', 'Username must be 8-63 characters').isString().isLength({ min: 8, max: 63 }),
         check('username', 'Username must only contain letters, numbers, underscore and dash').isAlphanumeric('en-US', { ignore: '_-' }),
         check('email', 'Email must be valid').isEmail(),
-        check('password', 'Password must be 8 characters and contain: an uppercase letter, a lowercase letter, a number, and a symbol').isStrongPassword(),
+        check('password', 'Password must be 8 characters and contain an uppercase letter, a lowercase letter, a number, and a symbol').isStrongPassword(),
         check('birthdate', 'Birthdate must be a valid ISO 8601 date').isISO8601(),
     ],
     (req, res) => {
@@ -251,8 +251,9 @@ app.post('/user',
         if (!validationErrors.isEmpty()) {
             return res.status(422).json({ errors: validationErrors.array() });
         }
-
-        const username = req.body.username.toLowerCase();
+        const lowName = req.body.username.toLowerCase();
+        console.log(`Creating user: ${lowName}`);
+        const username = lowName;
         const email = req.body.email;
 
         // bcrypt doesn't throw errors on an empty string, so check plain req and we will hash the password later

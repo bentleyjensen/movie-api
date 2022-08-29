@@ -13,7 +13,7 @@ passport.use(new LocalStrategy({
     passwordField: 'password',
 }, (username, password, callback) => {
     console.log(`Authenticating ${username} with password ${password}`);
-    Users.findOne({username: username}, (err, user) => {
+    Users.findOne({username: username.toLowerCase()}, (err, user) => {
         if (err) {
             console.log('Mongo threw an error');
             console.log(err);
