@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
@@ -99,7 +100,7 @@ app.get('/directors', (req, res) => {
 });
 
 app.get('/directors/:name', (req, res) => {
-    director.findOne({name: req.params.name})
+    director.findOne({name: req.params.name}).populate('movies')
         .then((result) => {
             if (result) {
                 return res.status(200).send(result);

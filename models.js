@@ -26,6 +26,7 @@ const directorSchema = Mongoose.Schema({
     name: {type: String, required: true},
     birthdate: Date,
     bio: String,
+    movies: [{type: ObjectId, ref: 'movie'}],
 });
 
 const userSchema = Mongoose.Schema({
