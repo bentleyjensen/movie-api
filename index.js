@@ -126,7 +126,7 @@ app.get('/genres', (req, res) => {
 });
 
 app.get('/movies/genre/:genre', (req, res) => {
-    movie.find({ 'genre.name': req.params.genre })
+    movie.find({ 'genre.name': req.params.genre }).populate('director')
         .then((result) => {
             if (!result || (Array.isArray(result) && result.length === 0)) {
                 return res.status(404).send(`Cannot find any movies with genre ${req.params.genre}`);
