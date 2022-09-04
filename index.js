@@ -170,13 +170,12 @@ app.get('/user',
             });
     });
 
-// Expects a full user object:
+// Expects a full user object, but without favorites:
 // {
 //    username: ...,
 //    password: ...,
 //    email: ...,
 //    birthdate: ...,
-//    favorites: ...,
 // }
 app.put('/user',
     [
@@ -186,7 +185,6 @@ app.put('/user',
         check('email', 'Email must be valid').isEmail(),
         check('password', 'Password must be 8 characters and contain an uppercase letter, lowercase letter, a number, and a symbol').isStrongPassword(),
         check('birthdate', 'Birthdate must be a valid date').isISO8601(),
-        check('favorites.*', 'Favorites must be MongoID').isMongoId(),
     ],
     (req, res) => {
         const validationErrors = validationResult(req);
@@ -208,7 +206,6 @@ app.put('/user',
                     password: hashedPass,
                     email: req.body.email,
                     birthdate: req.body.birthdate,
-                    favorites: req.body.favorites,
                 },
             },
             {
