@@ -156,7 +156,7 @@ app.get('/user',
         user.findOne({ username: req.user.username }, {
             // Hide password in result object
             password: 0,
-        }).populate('movies')
+        }).populate('favorites')
             .then((result) => {
                 if (result) {
                     return res.status(200).send(result);
