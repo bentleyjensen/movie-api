@@ -140,11 +140,9 @@ app.get('/movies/genre/:genre', (req, res) => {
         });
 });
 
-app.get('/user/:username', 
+app.get('/user', 
     [
         passport.authenticate('jwt', { session: false }),
-        check('username', 'Username must be 8-63 characters').isString().isLength({ min: 8, max: 63 }),
-        check('username', 'Username must only contain letters, numbers, underscore and dash').isAlphanumeric('en-US', { ignore: '_-' }),
     ],
     (req, res) => {
         const validationErrors = validationResult(req);
@@ -152,9 +150,8 @@ app.get('/user/:username',
             return res.status(422).json({ errors: validationErrors.array() });
         }
 
-        //                          Compare URL        to        JWT
-        if (!req.user.username || req.params.username !== req.user.username) {
-            return res.status(403).send('URL Parameter and authorized user mismatch');
+        if (!req.user.username) {
+            return res.status(403).send('Unable to determine user from JWT');
         }
         user.findOne({ username: req.user.username }, {
             // Hide password in result object
@@ -181,7 +178,7 @@ app.get('/user/:username',
 //    birthdate: ...,
 //    favorites: ...,
 // }
-app.put('/user/:username',
+app.put('/user',
     [
         passport.authenticate('jwt', { session: false }),
         check('username', 'Username must be 8-63 characters').isString().isLength({ min: 8, max: 63 }),
@@ -197,14 +194,14 @@ app.put('/user/:username',
             return res.status(422).json({ errors: validationErrors.array() });
         }
 
-        //                          Compare URL        to        JWT
-        if (!req.user.username || req.params.username !== req.user.username) {
-            return res.status(403).send('URL Parameter and authorized user mismatch');
+        if (!req.user.username) {
+            return res.status(403).send('Unable to determine user from JWT');
         }
+
         const hashedPass = user.hashPassword(req.body.password);
-        // Use URL param to find username, and body to update it
+        // Use JWT to find username, and body to update it
         // This enables a user to change their username
-        user.findOneAndUpdate({ username: req.params.username },
+        user.findOneAndUpdate({ username: req.user.username },
             {
                 $set: {
                     username: req.body.username,
@@ -223,7 +220,7 @@ app.put('/user/:username',
             .then((result) => {
                 if (!result) {
                     // With JWT auth, this should never happen, but leave it here just in case
-                    return res.status(404).send(`Could not find user ${req.params.username}`);
+                    return res.status(404).send(`Could not find user ${req.user.username}`);
                 } else {
                     return res.status(200).send(result);
                 }
@@ -300,10 +297,9 @@ app.post('/user/register',
         });
     });
 
-app.delete('/user/:id',
+app.delete('/user',
     [
         passport.authenticate('jwt', { session: false }),
-        check('id', 'ID must be valid Mongo ID').isMongoId(),
     ],
     (req, res) => {
         const validationErrors = validationResult(req);
@@ -311,10 +307,10 @@ app.delete('/user/:id',
             return res.status(422).json({ errors: validationErrors.array() });
         }
 
-        // Compare URL to JWT
-        if (!req.user._id || req.params.id !== req.user._id.toString()) {
-            return res.status(403).send('URL Parameter and authorized user mismatch');
+        if (!req.user.username) {
+            return res.status(403).send('Unable to determine user from JWT');
         }
+
         user.deleteOne({
             _id: req.params.id,
         }).then((result) => {
@@ -330,10 +326,9 @@ app.delete('/user/:id',
         });
     });
 
-app.post('/user/:username/favorites/:favorite', 
+app.post('/user/favorites/:favorite', 
     [
         passport.authenticate('jwt', { session: false }),
-        check('username', 'Invalid Username').isString().isAlphanumeric('en-US', { ignore: '_-' }),
         check('favorite', 'Favorite is not valid MongoID').isMongoId(),
     ],
     (req, res) => {
@@ -342,12 +337,11 @@ app.post('/user/:username/favorites/:favorite',
             return res.status(422).json({ errors: validationErrors.array() });
         }
 
-        // Compare URL to JWT
-        if (!req.params.username || req.params.username !== req.user.username) {
-            return res.status(403).send('URL Parameter and authorized user mismatch');
+        if (!req.user.username) {
+            return res.status(403).send('Unable to determine user from JWT');
         }
 
-        const username = req.params.username;
+        const username = req.user.username;
         const favorite = req.params.favorite;
 
         user.findOneAndUpdate({
@@ -376,10 +370,9 @@ app.post('/user/:username/favorites/:favorite',
 
     });
 
-app.delete('/user/:username/favorites/:favorite', 
+app.delete('/user/favorites/:favorite', 
     [
         passport.authenticate('jwt', { session: false }),
-        check('username', 'Invalid Username').isString().isAlphanumeric('en-US', { ignore: '_-' }),
         check('favorite', 'Favorite is not valid MongoID').isMongoId(),
     ],
     (req, res) => {
@@ -388,12 +381,11 @@ app.delete('/user/:username/favorites/:favorite',
             return res.status(422).json({ errors: validationErrors.array() });
         }
 
-        // Compare URL to JWT
-        if (!req.params.username || req.params.username !== req.user.username) {
-            return res.status(403).send('URL Parameter and authorized user mismatch');
+        if (!req.user.username) {
+            return res.status(403).send('Unable to determine user from JWT');
         }
 
-        const username = req.params.username;
+        const username = req.user.username;
         const favorite = req.params.favorite;
 
         user.findOneAndUpdate({
