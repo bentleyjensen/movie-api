@@ -188,48 +188,84 @@ app.put('/user',
     ],
     (req, res) => {
         const validationErrors = validationResult(req);
+
+        // Accumulate actual errors
+        const sendErrors = [];
+
         if (!validationErrors.isEmpty()) {
-            return res.status(422).json({ errors: validationErrors.array() });
+            // Send errors with non-empty values to accumulator
+            validationErrors.errors.forEach(err => {
+                if (err.value) {
+                    sendErrors.push(err);
+                }
+            });
+        }
+
+        if (sendErrors.length > 0){
+            return res.status(422).json({ errors: sendErrors });
         }
 
         if (!req.user.username) {
             return res.status(403).send('Unable to determine user from JWT');
         }
 
-        const hashedPass = user.hashPassword(req.body.password);
-        // Use JWT to find username, and body to update it
-        // This enables a user to change their username
-        user.findOneAndUpdate({ username: req.user.username },
-            {
-                $set: {
-                    username: req.body.username,
-                    password: hashedPass,
-                    email: req.body.email,
-                    birthdate: req.body.birthdate,
-                },
-            },
-            {
-                // Return the post-update object
-                new: true,
-                // Hide password in result
-                projection: { password: 0 },
-            })
-            .then((result) => {
-                if (!result) {
-                    // With JWT auth, this should never happen, but leave it here just in case
-                    return res.status(404).send(`Could not find user ${req.user.username}`);
-                } else {
-                    return res.status(200).send(result);
-                }
-            }).catch((err) => {
-                if (err.name === 'CastError') {
-                    return res.status(400).send('One or more keys were of an invalid type and could not be coerced to the correct type.');
-                } else {
-                    console.log('\n\n\nERROR:\n');
-                    console.log(err);
-                    return res.status(500).send(err);
-                }
-            });
+        // dynamically set properties for the $set
+        const setObj = {};
+
+        if (req.body.username) {
+            setObj.username = req.body.username;
+        }
+        if (req.body.password) {
+            setObj.password = user.hashPassword(req.body.password);
+        }
+        if (req.body.email) {
+            setObj.email = req.body.email;
+        }
+        if (req.body.birthdate) {
+            setObj.birthdate = req.body.birthdate;
+        }
+
+        // Make sure new username or email is available
+        user.findOne({
+            $or: [
+                { username: req.body.username },
+                { email: req.body.email },
+            ],
+        }).then((result) => {
+            // if there's a match, and the match is NOT the same user as in the JWT
+            if (result && (result.username !== req.user.username || result.email !== req.user.email)) {
+                return res.status(400).send(`user with username "${req.body.username}" or email "${req.body.email}" already exists`);
+            } else {
+                // Use JWT to find username, and body to update it
+                // This enables a user to change their username
+                user.findOneAndUpdate({ username: req.user.username },
+                    {
+                        $set: setObj,
+                    },
+                    {
+                        // Return the post-update object
+                        new: true,
+                        // Hide password in result
+                        projection: { password: 0 },
+                    })
+                    .then((result) => {
+                        if (!result) {
+                            // With JWT auth, this should never happen, but leave it here just in case
+                            return res.status(404).send(`Could not find user ${req.user.username}`);
+                        } else {
+                            return res.status(200).send(result);
+                        }
+                    });
+            }
+        }).catch((err) => {
+            if (err.name === 'CastError') {
+                return res.status(400).send('One or more keys were of an invalid type and could not be coerced to the correct type.');
+            } else {
+                console.log('\n\n\nERROR:\n');
+                console.log(err);
+                return res.status(500).send(err);
+            }
+        });
     });
 
 // No Auth needed to create a new user
@@ -247,7 +283,7 @@ app.post('/user/register',
             return res.status(422).json({ errors: validationErrors.array() });
         }
         const username = req.body.username.toLowerCase();
-        const email = req.body.email;
+        const email = req.body.email.toLowerCase();
 
         // bcrypt doesn't throw errors on an empty string, so check plain req and we will hash the password later
         if (!username || !email || !req.body.password) {
@@ -304,12 +340,12 @@ app.delete('/user',
             return res.status(422).json({ errors: validationErrors.array() });
         }
 
-        if (!req.user.username) {
+        if (!req.user._id) {
             return res.status(403).send('Unable to determine user from JWT');
         }
 
         user.deleteOne({
-            _id: req.params.id,
+            _id: req.user._id,
         }).then((result) => {
             return res.status(200).send(result);
         }).catch((err) => {
@@ -323,12 +359,13 @@ app.delete('/user',
         });
     });
 
-app.post('/user/favorites/:favorite', 
+app.post('/user/favorite/:favorite', 
     [
         passport.authenticate('jwt', { session: false }),
         check('favorite', 'Favorite is not valid MongoID').isMongoId(),
     ],
     (req, res) => {
+        console.log('POST /user/favorite/:favorite');
         const validationErrors = validationResult(req);
         if (!validationErrors.isEmpty()) {
             return res.status(422).json({ errors: validationErrors.array() });
@@ -354,6 +391,7 @@ app.post('/user/favorites/:favorite',
             // Hide password in result
             projection: { password: 0 },
         }).then((result) => {
+            console.log('sending result');
             return res.status(200).send(result);
         }).catch((err) => {
             if (err.name === 'CastError') {
@@ -367,7 +405,7 @@ app.post('/user/favorites/:favorite',
 
     });
 
-app.delete('/user/favorites/:favorite', 
+app.delete('/user/favorite/:favorite', 
     [
         passport.authenticate('jwt', { session: false }),
         check('favorite', 'Favorite is not valid MongoID').isMongoId(),
