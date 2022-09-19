@@ -248,6 +248,7 @@ app.put('/user',
                         // Hide password in result
                         projection: { password: 0 },
                     })
+                    .populate('favorites')
                     .then((result) => {
                         if (!result) {
                             // With JWT auth, this should never happen, but leave it here just in case
