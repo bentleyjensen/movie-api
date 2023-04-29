@@ -88,6 +88,25 @@ app.get('/movies/title/:title', (req, res) => {
         });
 });
 
+app.get('/movies/id/:id', (req, res) => {
+    movie.findOne({id: req.params.id})
+        .then((result) => {
+            if (result) {
+                return res.status(200).send(result);
+            } else {
+                return res.status(404).send(`Could not find movie with id ${req.params.id}`);
+            }
+        }).catch((err) => {
+            if (err.name === 'CastError') {
+                return res.status(400).send('One or more URL parameters were of an invalid type');
+            } else {
+                console.log('\n\n\nERROR:\n');
+                console.log(err);
+                return res.status(500).send(err);
+            }
+        });
+});
+
 app.get('/directors', (req, res) => {
     director.find()
         .then((result) => {
@@ -280,6 +299,7 @@ app.post('/user/register',
     ],
     (req, res) => {
         const validationErrors = validationResult(req);
+        console.log('Birthday: ', req.body.birthdate);
         if (!validationErrors.isEmpty()) {
             return res.status(422).json({ errors: validationErrors.array() });
         }
