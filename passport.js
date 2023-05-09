@@ -8,6 +8,11 @@ const Users = Models.user;
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
+/**
+ * @name Passport Strategy: LocalStrategy
+ * @description Define how to auth a user with username and password
+ * @kind constant
+ */
 passport.use(new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password',
@@ -29,6 +34,11 @@ passport.use(new LocalStrategy({
     });
 }));
 
+/**
+ * @name Passport Strategy: JWTStrategy
+ * @description Define how to auth a user when provided a JWT
+ * @kind constant
+ */
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     secretOrKey: config.JWTSecret,

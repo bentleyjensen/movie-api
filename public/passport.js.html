@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: passport.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,71 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: passport.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const Models = require('./models');
+const passportJWT = require('passport-jwt');
+const config = require('getconfig');
 
+const Users = Models.user;
+const JWTStrategy = passportJWT.Strategy;
+const ExtractJWT = passportJWT.ExtractJwt;
 
-    <h3> </h3>
+/**
+ * @name Passport Strategy: LocalStrategy
+ * @description Define how to auth a user with username and password
+ * @kind constant
+ */
+passport.use(new LocalStrategy({
+    usernameField: 'username',
+    passwordField: 'password',
+}, (username, password, callback) => {
+    Users.findOne({username: username.toLowerCase()}, (err, user) => {
+        if (err) {
+            console.log('Mongo threw an error');
+            console.log(err);
+            return callback(err);
+        }
 
+        if (!user || !user.validatePassword(password)) {
+            const errObj = { message: 'Incorrect username password combination' };
+            console.log('User does not exist');
+            return callback(errObj, false, errObj);
+        }
 
+        return callback(null, user);
+    });
+}));
 
-
-
-
-
-
-
-
-    
-
-
-
-
-
+/**
+ * @name Passport Strategy: JWTStrategy
+ * @description Define how to auth a user when provided a JWT
+ * @kind constant
+ */
+passport.use(new JWTStrategy({
+    jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+    secretOrKey: config.JWTSecret,
+}, (jwtPayload, callback) => {
+    return Users.findById(jwtPayload._id)
+        .then((user) => {
+            return callback(null, user);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+}));
+</code></pre>
+        </article>
+    </section>
 
 
 
