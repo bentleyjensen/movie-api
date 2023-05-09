@@ -18,6 +18,7 @@
     "plugins": [
         // "react"
     ],
+    "ignorePatterns": ["node_modules", "seedData", "public", "out"],
     "rules": {
         "indent": [
             "error",
