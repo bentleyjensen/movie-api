@@ -89,7 +89,7 @@ app.get('/movies/title/:title', (req, res) => {
 });
 
 app.get('/movies/id/:id', (req, res) => {
-    movie.findOne({id: req.params.id})
+    movie.findOne({_id: req.params.id})
         .then((result) => {
             if (result) {
                 return res.status(200).send(result);
@@ -426,7 +426,7 @@ app.post('/user/favorite/:favorite',
 
     });
 
-app.delete('/user/favorite/:favorite', 
+app.delete('/user/favorite/:favorite',
     [
         passport.authenticate('jwt', { session: false }),
         check('favorite', 'Favorite is not valid MongoID').isMongoId(),
